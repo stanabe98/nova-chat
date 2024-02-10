@@ -31,15 +31,7 @@ const UpdateGroupChatModal = ({ refetch, setRefetch, fetchMessages }) => {
   const [renameLoading, setRenameLoading] = useState(false);
 
   const toast = useToast();
-  const {
-    user,
-    setUser,
-    selectedChat,
-    setSelectedChat,
-    chats,
-    setChats,
-    getConfig,
-  } = ChatState();
+  const { user, selectedChat, setSelectedChat, getConfig } = ChatState();
 
   const handleRemoveUser = async (usertoRemove) => {
     if (

@@ -8,30 +8,30 @@ const ChatProvider = ({ children }) => {
   const [selectedChat, setSelectedChat] = useState();
   const [chats, setChats] = useState([]);
   const [notification, setNotification] = useState([]);
+  const [getConfig, setGetConfig] = useState({});
+  const [postConfig, setPostConfig] = useState({});
+  const [loginConfig, seLoginConfig] = useState({});
 
   const navigate = useNavigate();
 
-  const getConfig = {
-    headers: {
-      Authorization: `Bearer ${user.token}`,
-    },
-  };
-
-  const postConfig = {
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${user.token}`,
-    },
-  };
-
-  const loginConfig = {
-    headers: {
-      "Content-type": "application/json",
-    },
-  };
   useEffect(() => {
     const userInfo = JSON.parse(localStorage.getItem("userInfo"));
     setUser(userInfo);
+    user &&
+      setGetConfig({
+        headers: {
+          Authorization: `Bearer ${user.token}`,
+        },
+      });
+
+    user &&
+      setPostConfig({
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${user.token}`,
+        },
+      });
+
     if (!userInfo) {
       navigate("/");
     }
