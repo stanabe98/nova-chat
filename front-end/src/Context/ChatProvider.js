@@ -9,6 +9,7 @@ const ChatProvider = ({ children }) => {
   const [chats, setChats] = useState([]);
   const [notification, setNotification] = useState([]);
 
+  const [refetchChats, setRefetchChats] = useState(false);
   const [loginConfig, seLoginConfig] = useState({});
 
   const navigate = useNavigate();
@@ -52,6 +53,8 @@ const ChatProvider = ({ children }) => {
         getConfig,
         postConfig,
         loginConfig,
+        refetchChats,
+        setRefetchChats,
       }}
     >
       {children}

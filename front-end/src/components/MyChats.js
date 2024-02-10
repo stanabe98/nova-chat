@@ -17,8 +17,16 @@ import axios from "axios";
 
 const MyChats = ({ refetch }) => {
   const [loggedUser, setLoggedUser] = useState();
-  const { selectedChat, setSelectedChat, user, chats, setChats, getConfig } =
-    ChatState();
+  const {
+    selectedChat,
+    setSelectedChat,
+    user,
+    chats,
+    setChats,
+    getConfig,
+    refetchChats,
+    setRefetchChats,
+  } = ChatState();
   const [latestMessage, setLatestMessage] = useState();
   const toast = useToast();
 
@@ -42,7 +50,8 @@ const MyChats = ({ refetch }) => {
   useEffect(() => {
     setLoggedUser(JSON.parse(localStorage.getItem("userInfo")));
     fetchChats();
-  }, [refetch]);
+  }, [refetch, refetchChats]);
+
 
   return (
     <Box

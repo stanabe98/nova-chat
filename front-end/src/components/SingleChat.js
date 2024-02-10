@@ -47,6 +47,8 @@ const SingleChat = ({ refetch, setRefetch }) => {
     setNotification,
     getConfig,
     postConfig,
+    refetchChats,
+    setRefetchChats,
   } = ChatState();
   const toast = useToast();
 
@@ -125,6 +127,7 @@ const SingleChat = ({ refetch, setRefetch }) => {
         socket.emit("new message", data);
 
         setMessages([...messages, data]);
+        setRefetchChats(!refetchChats)
       } catch (error) {
         toast({
           title: "Error Occured",
