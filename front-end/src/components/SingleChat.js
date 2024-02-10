@@ -39,23 +39,24 @@ const SingleChat = ({ refetch, setRefetch }) => {
     },
   };
 
-  const { user, selectedChat, setSelectedChat, notification, setNotification } =
-    ChatState();
+  const {
+    user,
+    selectedChat,
+    setSelectedChat,
+    notification,
+    setNotification,
+    getConfig,
+    postConfig,
+  } = ChatState();
   const toast = useToast();
 
   const fetchMessages = async () => {
     if (!selectedChat) return;
     try {
-      const config = {
-        headers: {
-          Authorization: `Bearer ${user.token}`,
-        },
-      };
-
       setLoading(true);
       const { data } = await axios.get(
         `/api/message/${selectedChat._id}`,
-        config
+        getConfig
       );
 
       setMessages(data);
@@ -87,7 +88,7 @@ const SingleChat = ({ refetch, setRefetch }) => {
     selectedChatCompare = selectedChat;
   }, [selectedChat]);
 
-  console.log(notification, "-------------")
+  console.log(notification, "-------------");
 
   useEffect(() => {
     socket.on("message received", (newMessageReceived) => {
@@ -111,13 +112,6 @@ const SingleChat = ({ refetch, setRefetch }) => {
     if (event.key === "Enter" && newMessage) {
       socket.emit("stop typing", selectedChat._id);
       try {
-        const config = {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${user.token}`,
-          },
-        };
-
         setNewMessage("");
         const { data } = await axios.post(
           "/api/message",
@@ -125,9 +119,9 @@ const SingleChat = ({ refetch, setRefetch }) => {
             content: newMessage,
             chatId: selectedChat._id,
           },
-          config
+          postConfig
         );
-  
+
         socket.emit("new message", data);
 
         setMessages([...messages, data]);

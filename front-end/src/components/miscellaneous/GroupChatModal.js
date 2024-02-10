@@ -29,7 +29,7 @@ const GroupChatModal = ({ children }) => {
   const [loading, setLoading] = useState(false);
   const toast = useToast();
 
-  const { user, chats, setChats } = ChatState();
+  const { user, chats, setChats, getConfig } = ChatState();
 
   const handleSearch = async (query) => {
     setSearch(query);
@@ -38,13 +38,8 @@ const GroupChatModal = ({ children }) => {
     }
     try {
       setLoading(true);
-      const config = {
-        headers: {
-          Authorization: `Bearer ${user.token}`,
-        },
-      };
-
-      const { data } = await axios.get(`/api/user?search=${search}`, config);
+  
+      const { data } = await axios.get(`/api/user?search=${search}`, getConfig);
     
       setLoading(false);
       setSearchResults(data);
@@ -72,18 +67,13 @@ const GroupChatModal = ({ children }) => {
       return;
     }
     try {
-      const config = {
-        headers: {
-          Authorization: `Bearer ${user.token}`,
-        },
-      };
       const { data } = await axios.post(
         "/api/chat/group",
         {
           name: groupChatName,
           users: JSON.stringify(selectedUsers.map((u) => u._id)),
         },
-        config
+        getConfig
       );
 
       setChats([data, ...chats]);

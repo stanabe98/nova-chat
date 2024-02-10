@@ -11,6 +11,24 @@ const ChatProvider = ({ children }) => {
 
   const navigate = useNavigate();
 
+  const getConfig = {
+    headers: {
+      Authorization: `Bearer ${user.token}`,
+    },
+  };
+
+  const postConfig = {
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${user.token}`,
+    },
+  };
+
+  const loginConfig = {
+    headers: {
+      "Content-type": "application/json",
+    },
+  };
   useEffect(() => {
     const userInfo = JSON.parse(localStorage.getItem("userInfo"));
     setUser(userInfo);
@@ -30,6 +48,9 @@ const ChatProvider = ({ children }) => {
         setNotification,
         chats,
         setChats,
+        getConfig,
+        postConfig,
+        loginConfig,
       }}
     >
       {children}

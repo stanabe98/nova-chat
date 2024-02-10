@@ -9,18 +9,14 @@ import axios from "axios";
 
 const MyChats = ({ refetch }) => {
   const [loggedUser, setLoggedUser] = useState();
-  const { selectedChat, setSelectedChat, user, chats, setChats } = ChatState();
+  const { selectedChat, setSelectedChat, user, chats, setChats,getConfig } = ChatState();
   const [latestMessage,setLatestMessage]=useState();
   const toast = useToast();
 
   const fetchChats = async () => {
     try {
-      const config = {
-        headers: {
-          Authorization: `Bearer ${user.token}`,
-        },
-      };
-      const { data } = await axios.get("/api/chat", config);
+      
+      const { data } = await axios.get("/api/chat", getConfig);
       setChats(data);
       console.log("fetchedchats", data[0].latestMessage.content);
     } catch (error) {
