@@ -1,0 +1,114 @@
+import React, { useEffect, useState } from "react";
+import { ChatState } from "../Context/ChatProvider";
+import { useToast, Box, Button, Stack, Text } from "@chakra-ui/react";
+import { AddIcon } from "@chakra-ui/icons";
+import ChatLoading from "./ChatLoading";
+import { getSender } from "../config/ChatLogics";
+import GroupChatModal from "./miscellaneous/GroupChatModal";
+import axios from "axios";
+
+const MyChats = ({ refetch }) => {
+  const [loggedUser, setLoggedUser] = useState();
+  const { selectedChat, setSelectedChat, user, chats, setChats } = ChatState();
+  const [latestMessage,setLatestMessage]=useState();
+  const toast = useToast();
+
+  const fetchChats = async () => {
+    try {
+      const config = {
+        headers: {
+          Authorization: `Bearer ${user.token}`,
+        },
+      };
+      const { data } = await axios.get("/api/chat", config);
+      setChats(data);
+      console.log("fetchedchats", data[0].latestMessage.content);
+    } catch (error) {
+      toast({
+        title: "Error Occured",
+        description: "Failed to load chats data",
+        status: "error",
+        duration: 2000,
+        isClosable: true,
+        position: "bottom-left",
+      });
+    }
+  };
+
+  useEffect(() => {
+    setLoggedUser(JSON.parse(localStorage.getItem("userInfo")));
+    fetchChats();
+  }, [refetch]);
+
+  return (
+    <Box
+      display={{ base: selectedChat ? "none" : "flex", md: "flex" }}
+      width={{ base: "100%", md: "33%" }}
+      className="flex flex-col items-center p-3 bg-white rounded-lg border"
+    >
+      <Box
+        className="flex w-full justify-between items-center pb-3 px-3"
+        fontSize={{ base: "28px", md: "30px" }}
+        fontFamily={"Work sans"}
+      >
+        My Chats
+        <GroupChatModal>
+          <Button
+            display={"flex"}
+            fontSize={{ base: "17px", md: "10px", lg: "17px" }}
+            rightIcon={<AddIcon />}
+          >
+            Create new group chat
+          </Button>
+        </GroupChatModal>
+      </Box>
+
+      <Box
+        background={"#F8F8F8"}
+        className="flex flex-col p-3 w-full h-full overflow-y-hidden rounded-lg"
+      >
+        {chats ? (
+          <Stack
+            className="overflow-y-scroll"
+            style={{ scrollbarWidth: "none" }}
+          >
+            {chats.map((chat) => (
+              <>
+                <Box
+                  onClick={() => {
+                    setSelectedChat(chat);
+                    console.log("selectedChat", selectedChat);
+                    console.log(typeof selectedChat);
+                  }}
+                  className="cursor-pointer px-3 py-3 rounded-lg"
+                  background={
+                    selectedChat && selectedChat._id === chat._id
+                      ? "#38B2AC"
+                      : "#E8E8E8"
+                  }
+                  color={
+                    selectedChat && selectedChat._id === chat._id
+                      ? "white"
+                      : "black"
+                  }
+                  key={chat._id}
+                >
+                  <Text>
+                    {!chat.isGroupChat
+                      ? getSender(loggedUser, chat.users)
+                      : chat.chatName}
+                  </Text>
+                  <span>{chat.latestMessage?.content}</span>
+                </Box>
+              </>
+            ))}
+          </Stack>
+        ) : (
+          <ChatLoading />
+        )}
+      </Box>
+    </Box>
+  );
+};
+
+export default MyChats;
