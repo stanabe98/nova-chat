@@ -68,6 +68,14 @@ const Login = () => {
       setLoading(false);
     }
   };
+
+  const handleKeyDown = (event) => {
+    if (event.key === "Enter") {
+      submitHandler();
+    }
+  };
+
+
   return (
     <VStack spacing={"5px"} color={"black"}>
       <FormControl id="email" isRequired>
@@ -85,13 +93,9 @@ const Login = () => {
             type={show ? "text" : "password"}
             placeholder="Enter Your Password"
             value={password}
+            onKeyDown={handleKeyDown}
             onChange={(e) => setPassword(e.target.value)}
           />
-          <InputRightElement width="w.5rem">
-            <Button h="1.75rem" size={"sm"} onClick={() => setShow(!show)}>
-              {show ? "Hide" : "Show"}
-            </Button>
-          </InputRightElement>
         </InputGroup>
       </FormControl>
 

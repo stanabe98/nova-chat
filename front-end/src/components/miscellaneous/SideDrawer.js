@@ -20,14 +20,9 @@ import {
   Input,
   Spinner,
 } from "@chakra-ui/react";
-import {
-  BellIcon,
-  AddIcon,
-  WarningIcon,
-  ChevronDownIcon,
-} from "@chakra-ui/icons";
+import { ChevronDownIcon } from "@chakra-ui/icons";
 import MailIcon from "@mui/icons-material/Mail";
-import Badge from "@mui/material/Badge";
+
 import { ChatState } from "../../Context/ChatProvider";
 import { useNavigate } from "react-router-dom";
 import ProfileModal from "./ProfileModal";
@@ -40,7 +35,7 @@ const SideDrawer = () => {
   const [search, setSearch] = useState("");
   const [searchResult, setSearchResult] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [loadingChat, setLoadingChat, getConfig, postConfig] = useState();
+  const [loadingChat, setLoadingChat] = useState();
   const {
     user,
     setSelectedChat,
@@ -49,20 +44,17 @@ const SideDrawer = () => {
     setChats,
     notification,
     setNotification,
+    getConfig,
+    postConfig,
   } = ChatState();
   const navigate = useNavigate();
   const toast = useToast();
   const { isOpen, onOpen, onClose } = useDisclosure();
 
-  useEffect(()=>{
-    console.log("selected chat changed")
-  },[selectedChat])
-
   const logoutHandler = () => {
     localStorage.removeItem("userInfo");
     navigate("/");
   };
-
 
   const handleSearch = async () => {
     if (!search) {
@@ -78,7 +70,10 @@ const SideDrawer = () => {
     try {
       setLoading(true);
 
-      const { data } = await axios.get(`/api/user?search=${search}`, getConfig(user));
+      const { data } = await axios.get(
+        `/api/user?search=${search}`,
+        getConfig(user)
+      );
 
       setLoading(false);
       setSearchResult(data);
@@ -94,11 +89,21 @@ const SideDrawer = () => {
     }
   };
 
+  const handleKeyDown = (event) => {
+    if (event.key === "Enter") {
+      handleSearch();
+    }
+  };
+
   const accessChat = async (userId) => {
     try {
       setLoadingChat(true);
 
-      const { data } = await axios.post("/api/chat", { userId }, postConfig(user));
+      const { data } = await axios.post(
+        "/api/chat",
+        { userId },
+        postConfig(user)
+      );
 
       if (!chats.find((c) => c._id === data._id)) {
         setChats([data, ...chats]);
@@ -134,7 +139,7 @@ const SideDrawer = () => {
           <Button variant={"ghost"} onClick={onOpen}>
             <i class="fa-solid fa-magnifying-glass"></i>
             <Text className="px-4" display={{ base: "none", md: "flex" }}>
-              Search User
+              Search
             </Text>
           </Button>
         </Tooltip>
@@ -169,10 +174,8 @@ const SideDrawer = () => {
                 <MenuItem
                   key={item._id}
                   onClick={() => {
-                    // console.log(selectedChat ==)
                     setSelectedChat(item.chat);
-
-                    console.log("selected chat drawer", selectedChat)
+                    console.log("selected chat drawer", selectedChat);
                     setNotification(notification.filter((n) => n !== item));
                   }}
                 >
@@ -211,7 +214,13 @@ const SideDrawer = () => {
                 marginRight={2}
                 placeholder="Search by name or email"
                 value={search}
-                onChange={(e) => setSearch(e.target.value)}
+                onKeyDown={handleKeyDown}
+                onChange={(e) => {
+                  if (!e.target.value.trim()) {
+                    setSearchResult([]);
+                  }
+                  setSearch(e.target.value);
+                }}
               />
               <Button onClick={handleSearch}>
                 <i class="fa-solid fa-magnifying-glass"></i>

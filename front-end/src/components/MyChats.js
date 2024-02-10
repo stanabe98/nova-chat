@@ -1,6 +1,14 @@
 import React, { useEffect, useState } from "react";
 import { ChatState } from "../Context/ChatProvider";
-import { useToast, Box, Button, Stack, Text } from "@chakra-ui/react";
+import {
+  useToast,
+  Box,
+  Button,
+  Stack,
+  Text,
+  Avatar,
+  AvatarBadge,
+} from "@chakra-ui/react";
 import { AddIcon } from "@chakra-ui/icons";
 import ChatLoading from "./ChatLoading";
 import { getSender } from "../config/ChatLogics";
@@ -9,13 +17,13 @@ import axios from "axios";
 
 const MyChats = ({ refetch }) => {
   const [loggedUser, setLoggedUser] = useState();
-  const { selectedChat, setSelectedChat, user, chats, setChats,getConfig } = ChatState();
-  const [latestMessage,setLatestMessage]=useState();
+  const { selectedChat, setSelectedChat, user, chats, setChats, getConfig } =
+    ChatState();
+  const [latestMessage, setLatestMessage] = useState();
   const toast = useToast();
 
   const fetchChats = async () => {
     try {
-      
       const { data } = await axios.get("/api/chat", getConfig(user));
       setChats(data);
       console.log("fetchedchats", data[0].latestMessage.content);
@@ -89,11 +97,16 @@ const MyChats = ({ refetch }) => {
                   }
                   key={chat._id}
                 >
-                  <Text>
-                    {!chat.isGroupChat
-                      ? getSender(loggedUser, chat.users)
-                      : chat.chatName}
-                  </Text>
+                  <div className="flex items-center">
+                    <Avatar size={"sm"} className="mr-1">
+                      <AvatarBadge boxSize="1.25em" bg="green.500" />
+                    </Avatar>
+                    <Text>
+                      {!chat.isGroupChat
+                        ? getSender(loggedUser, chat.users)
+                        : chat.chatName}
+                    </Text>
+                  </div>
                   <span>{chat.latestMessage?.content}</span>
                 </Box>
               </>

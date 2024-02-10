@@ -153,11 +153,6 @@ const Signup = () => {
             placeholder="Enter Your Password"
             onChange={(e) => setPassword(e.target.value)}
           />
-          <InputRightElement width="w.5rem">
-            <Button h="1.75rem" size={"sm"} onClick={() => setShow(!show)}>
-              {show ? "Hide" : "Show"}
-            </Button>
-          </InputRightElement>
         </InputGroup>
       </FormControl>
       <FormControl id="confirm-password" isRequired>
@@ -168,11 +163,6 @@ const Signup = () => {
             placeholder="Enter Your Password"
             onChange={(e) => setConfirmPassword(e.target.value)}
           />
-          <InputRightElement width="w.5rem">
-            <Button h="1.75rem" size={"sm"} onClick={() => setShow(!show)}>
-              {show ? "Hide" : "Show"}
-            </Button>
-          </InputRightElement>
         </InputGroup>
       </FormControl>
       <FormControl id="pic" isRequired>
