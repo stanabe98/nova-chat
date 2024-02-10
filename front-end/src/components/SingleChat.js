@@ -56,7 +56,7 @@ const SingleChat = ({ refetch, setRefetch }) => {
       setLoading(true);
       const { data } = await axios.get(
         `/api/message/${selectedChat._id}`,
-        getConfig
+        getConfig(user)
       );
 
       setMessages(data);
@@ -119,7 +119,7 @@ const SingleChat = ({ refetch, setRefetch }) => {
             content: newMessage,
             chatId: selectedChat._id,
           },
-          postConfig
+          postConfig(user)
         );
 
         socket.emit("new message", data);

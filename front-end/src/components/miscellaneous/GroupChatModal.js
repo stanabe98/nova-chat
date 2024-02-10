@@ -39,7 +39,7 @@ const GroupChatModal = ({ children }) => {
     try {
       setLoading(true);
   
-      const { data } = await axios.get(`/api/user?search=${search}`, getConfig);
+      const { data } = await axios.get(`/api/user?search=${search}`, getConfig(user));
     
       setLoading(false);
       setSearchResults(data);
@@ -73,7 +73,7 @@ const GroupChatModal = ({ children }) => {
           name: groupChatName,
           users: JSON.stringify(selectedUsers.map((u) => u._id)),
         },
-        getConfig
+        getConfig(user)
       );
 
       setChats([data, ...chats]);

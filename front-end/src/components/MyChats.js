@@ -16,7 +16,7 @@ const MyChats = ({ refetch }) => {
   const fetchChats = async () => {
     try {
       
-      const { data } = await axios.get("/api/chat", getConfig);
+      const { data } = await axios.get("/api/chat", getConfig(user));
       setChats(data);
       console.log("fetchedchats", data[0].latestMessage.content);
     } catch (error) {
