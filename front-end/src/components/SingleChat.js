@@ -81,26 +81,13 @@ const SingleChat = ({ refetch, setRefetch }) => {
   useEffect(() => {
     socket?.on("newMessage", (newMessage) => {
       console.log("new message-----------", newMessage.chat._id);
-      if (selectedChat._id === newMessage.chat._id) {
+      if (selectedChat?._id === newMessage.chat._id) {
         setMessages([...messages, newMessage]);
         setRefetchChats(!refetchChats);
       } else {
         setRefetchChats(!refetchChats);
       }
     });
-
-    // socket?.on("userTyping", ({ currentUserName, selectedChatId }) => {
-    //   console.log(currentUserName,"is typing")
-    //   if (selectedChatId != selectedChat._id) return;
-    //   setisUserTyping(true);
-    //   setUserTyping(currentUserName);
-    // });
-
-    // socket?.on("userStopTyping", ({ currentUserName, selectedChatId }) => {
-    //   if (selectedChatId != selectedChat._id) return;
-    //   setisUserTyping(false);
-    //   setUserTyping("");
-    // });
     return () => {
       socket?.off("userTyping");
       socket?.off("newMessage");
@@ -110,9 +97,9 @@ const SingleChat = ({ refetch, setRefetch }) => {
   useEffect(() => {
     socket?.on("userTyping", ({ currentUserName, selectedChatId }) => {
       console.log(currentUserName, "is typing");
-      if (selectedChatId != selectedChat._id) return;
-      setisUserTyping(true);
-      setUserTyping(currentUserName);
+      if (selectedChatId != selectedChat?._id) return;
+      // setisUserTyping(true);
+      // setUserTyping(currentUserName);
     });
 
     if (newMessage === "") {
@@ -177,12 +164,6 @@ const SingleChat = ({ refetch, setRefetch }) => {
       var timeNow = new Date().getTime();
       var timeDiff = timeNow - lastTypingTime;
       if (timeDiff >= timerLength && typing) {
-        // socket.emit("stopTyping", {
-        //   currentUserId,
-        //   currentUserName,
-        //   selectedChatId,
-        //   selectedChatUserIds,
-        // });
         setTyping(false);
       }
     }, timerLength);

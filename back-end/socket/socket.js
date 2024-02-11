@@ -40,7 +40,7 @@ io.on("connection", (socket) => {
       selectedChatId,
       selectedChatUserIds,
     }) => {
-      const otherUsers = selectedChatUserIds.filter((u) => u == currentUserId);
+      const otherUsers = selectedChatUserIds.filter((u) => u !== currentUserId);
 
       if (otherUsers.length == 1) {
         const receiverSocketId = getReceiverSocketId(otherUsers);
@@ -64,28 +64,7 @@ io.on("connection", (socket) => {
     }
   );
 
-  socket.on("stoptyping", ({ userId, userName, targetChatId, chatUserIds }) => {
-    const otherUser = chatUserIds.filter((u) => u == userId);
-    if (chatUserIds.length == 2) {
-      const receiverSocketId = getReceiverSocketId(otherUser);
-      if (receiverSocketId) {
-        io.to(receiverSocketId).emit("userStopTyping", {
-          userName,
-          targetChatId,
-        });
-      }
-    } else {
-      otherUser.forEach((user) => {
-        const receiverSocketId = getReceiverSocketId(user);
-        if (receiverSocketId) {
-          io.to(receiverSocketId).emit("userStopTyping", {
-            userName,
-            targetChatId,
-          });
-        }
-      });
-    }
-  });
+
 
   socket.on("disconnect", () => {
     console.log("user disconnected", socket.id);
