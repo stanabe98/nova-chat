@@ -81,18 +81,18 @@ const SingleChat = ({ refetch, setRefetch }) => {
   useEffect(() => {
     socket?.on("newMessage", (newMessage) => {
       console.log("new message-----------", newMessage.chat._id);
+      setRefetchChats(!refetchChats);
+
       if (selectedChat?._id === newMessage.chat._id) {
         setMessages([...messages, newMessage]);
-        setRefetchChats(!refetchChats);
       } else {
-        setRefetchChats(!refetchChats);
       }
     });
     return () => {
       socket?.off("userTyping");
       socket?.off("newMessage");
     };
-  }, [socket, setMessages, messages]);
+  }, [socket, setMessages, messages, refetchChats]);
 
   useEffect(() => {
     socket?.on("userTyping", ({ currentUserName, selectedChatId }) => {
