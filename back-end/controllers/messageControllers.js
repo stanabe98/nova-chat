@@ -2,19 +2,21 @@ const expressAsyncHandler = require("express-async-handler");
 const Message = require("../models/messageModel");
 const User = require("../models/userModel");
 const Chat = require("../models/chatModel");
+const {  getReceiverSocketId, io} = require("../socket/socket");
+
 
 const sendMessage = expressAsyncHandler(async (req, res) => {
   const { content, chatId } = req.body;
-  console.log("req", req.body);
+
 
   if (!content || !chatId) {
     console.log("Invalid data passed");
     return res.sendStatus(400);
   }
-  const chatUsers= await Chat.findById(chatId);
+  const chatUsers = await Chat.findById(chatId);
 
-  if(!chatUsers.users.includes(req.user._id)){
-    res.status(401)
+  if (!chatUsers.users.includes(req.user._id)) {
+    res.status(401);
     throw new Error("You are not a chat participant");
   }
 
@@ -37,8 +39,16 @@ const sendMessage = expressAsyncHandler(async (req, res) => {
       latestMessage: message,
     });
 
+    chatUsers.users.forEach((userId) => {
+      const receiverSocketId = getReceiverSocketId(userId);
+      if(receiverSocketId){
+        io.to(receiverSocketId).emit("newMessage", message);
+      }
+    });
+
     res.json(message);
   } catch (error) {
+    console.log("here is the error");
     res.status(400);
     throw new Error(error.message);
   }

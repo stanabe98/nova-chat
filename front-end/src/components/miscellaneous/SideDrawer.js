@@ -175,7 +175,6 @@ const SideDrawer = () => {
                   key={item._id}
                   onClick={() => {
                     setSelectedChat(item.chat);
-                    console.log("selected chat drawer", selectedChat);
                     setNotification(notification.filter((n) => n !== item));
                   }}
                 >

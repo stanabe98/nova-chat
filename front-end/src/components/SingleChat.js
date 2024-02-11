@@ -16,19 +16,17 @@ import UpdateGroupChatModal from "./miscellaneous/UpdateGroupChatModal";
 import axios from "axios";
 import "./styles.css";
 import ScrollableChat from "./ScrollableChat";
-import io from "socket.io-client";
 import Lottie from "react-lottie";
 import animationData from "../animations/typingAnime.json";
-
-const ENDPOINT = "http://localhost:5000";
-var socket, selectedChatCompare;
+import { useSocketContext } from "../Context/SocketContext";
 
 const SingleChat = ({ refetch, setRefetch }) => {
   const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(false);
   const [newMessage, setNewMessage] = useState();
-  const [socketConnected, setSocketConnected] = useState(false);
   const [typing, setTyping] = useState(false);
+  const [isUserTyping, setisUserTyping] = useState(false);
+  const [userTyping, setUserTyping] = useState();
   const [isTyping, setIsTyping] = useState(false);
   const defaultOptions = {
     loop: true,
@@ -51,6 +49,7 @@ const SingleChat = ({ refetch, setRefetch }) => {
     setRefetchChats,
   } = ChatState();
   const toast = useToast();
+  const { socket } = useSocketContext();
 
   const fetchMessages = async () => {
     if (!selectedChat) return;
@@ -63,8 +62,6 @@ const SingleChat = ({ refetch, setRefetch }) => {
 
       setMessages(data);
       setLoading(false);
-
-      socket.emit("join chat", selectedChat._id);
     } catch (error) {
       toast({
         title: "Error Occured",
@@ -78,41 +75,57 @@ const SingleChat = ({ refetch, setRefetch }) => {
   };
 
   useEffect(() => {
-    socket = io(ENDPOINT);
-    socket.emit("setup", user);
-    socket.on("connected", () => setSocketConnected(true));
-    socket.on("typing", () => setIsTyping(true));
-    socket.on("stop typing", () => setIsTyping(false));
-  }, []);
-
-  useEffect(() => {
     fetchMessages();
-    selectedChatCompare = selectedChat;
   }, [selectedChat]);
 
-  console.log(notification, "-------------");
-
   useEffect(() => {
-    socket.on("message received", (newMessageReceived) => {
-      if (
-        !selectedChatCompare ||
-        selectedChatCompare._id !== newMessageReceived.chat._id
-      ) {
-        if (!notification.includes(newMessageReceived)) {
-          //axios post notification
-
-          setNotification([newMessageReceived, ...notification]);
-          setRefetch(!fetch);
-        }
+    socket?.on("newMessage", (newMessage) => {
+      console.log("new message-----------", newMessage.chat._id);
+      if (selectedChat._id === newMessage.chat._id) {
+        setMessages([...messages, newMessage]);
+        setRefetchChats(!refetchChats);
       } else {
-        setMessages([...messages, newMessageReceived]);
+        setRefetchChats(!refetchChats);
       }
     });
+
+    // socket?.on("userTyping", ({ currentUserName, selectedChatId }) => {
+    //   console.log(currentUserName,"is typing")
+    //   if (selectedChatId != selectedChat._id) return;
+    //   setisUserTyping(true);
+    //   setUserTyping(currentUserName);
+    // });
+
+    // socket?.on("userStopTyping", ({ currentUserName, selectedChatId }) => {
+    //   if (selectedChatId != selectedChat._id) return;
+    //   setisUserTyping(false);
+    //   setUserTyping("");
+    // });
+    return () => {
+      socket?.off("userTyping");
+      socket?.off("newMessage");
+    };
+  }, [socket, setMessages, messages]);
+
+  useEffect(() => {
+    socket?.on("userTyping", ({ currentUserName, selectedChatId }) => {
+      console.log(currentUserName, "is typing");
+      if (selectedChatId != selectedChat._id) return;
+      setisUserTyping(true);
+      setUserTyping(currentUserName);
+    });
+
+    if (newMessage === "") {
+      socket?.off("userTyping");
+      return;
+    }
+    return () => {
+      socket?.off("userTyping");
+    };
   });
 
   const sendMessage = async (event) => {
     if (event.key === "Enter" && newMessage) {
-      socket.emit("stop typing", selectedChat._id);
       try {
         setNewMessage("");
         const { data } = await axios.post(
@@ -124,10 +137,8 @@ const SingleChat = ({ refetch, setRefetch }) => {
           postConfig(user)
         );
 
-        socket.emit("new message", data);
-
         setMessages([...messages, data]);
-        setRefetchChats(!refetchChats)
+        setRefetchChats(!refetchChats);
       } catch (error) {
         toast({
           title: "Error Occured",
@@ -143,10 +154,21 @@ const SingleChat = ({ refetch, setRefetch }) => {
 
   const typingHandler = (e) => {
     setNewMessage(e.target.value);
-    if (!socketConnected) return;
+    const selectedChatUserIds = selectedChat.users.map(({ _id }) => _id);
+    const currentUserId = user._id;
+    const currentUserName = user.name;
+    const selectedChatId = selectedChat._id;
+
     if (!typing) {
       setTyping(true);
-      socket.emit("typing", selectedChat._id);
+      console.log("typing", selectedChatUserIds);
+
+      socket.emit("typing", {
+        currentUserId,
+        currentUserName,
+        selectedChatId,
+        selectedChatUserIds,
+      });
     }
 
     let lastTypingTime = new Date().getTime();
@@ -155,7 +177,12 @@ const SingleChat = ({ refetch, setRefetch }) => {
       var timeNow = new Date().getTime();
       var timeDiff = timeNow - lastTypingTime;
       if (timeDiff >= timerLength && typing) {
-        socket.emit("stop typing", selectedChat._id);
+        // socket.emit("stopTyping", {
+        //   currentUserId,
+        //   currentUserName,
+        //   selectedChatId,
+        //   selectedChatUserIds,
+        // });
         setTyping(false);
       }
     }, timerLength);
@@ -211,7 +238,7 @@ const SingleChat = ({ refetch, setRefetch }) => {
               </div>
             )}
             <FormControl onKeyDown={sendMessage} isRequired marginTop={3}>
-              {isTyping ? (
+              {isUserTyping ? (
                 <div>
                   <Lottie
                     options={defaultOptions}

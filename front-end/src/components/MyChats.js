@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { ChatState } from "../Context/ChatProvider";
+import { useSocketContext } from "../Context/SocketContext";
 import {
   useToast,
   Box,
@@ -11,7 +12,7 @@ import {
 } from "@chakra-ui/react";
 import { AddIcon } from "@chakra-ui/icons";
 import ChatLoading from "./ChatLoading";
-import { getSender } from "../config/ChatLogics";
+import { getSender, getSenderId } from "../config/ChatLogics";
 import GroupChatModal from "./miscellaneous/GroupChatModal";
 import axios from "axios";
 
@@ -27,6 +28,7 @@ const MyChats = ({ refetch }) => {
     refetchChats,
     setRefetchChats,
   } = ChatState();
+  const { onlineUsers } = useSocketContext();
   const [latestMessage, setLatestMessage] = useState();
   const toast = useToast();
 
@@ -34,7 +36,6 @@ const MyChats = ({ refetch }) => {
     try {
       const { data } = await axios.get("/api/chat", getConfig(user));
       setChats(data);
-      console.log("fetchedchats", data[0].latestMessage.content);
     } catch (error) {
       toast({
         title: "Error Occured",
@@ -51,7 +52,6 @@ const MyChats = ({ refetch }) => {
     setLoggedUser(JSON.parse(localStorage.getItem("userInfo")));
     fetchChats();
   }, [refetch, refetchChats]);
-
 
   return (
     <Box
@@ -90,8 +90,7 @@ const MyChats = ({ refetch }) => {
                 <Box
                   onClick={() => {
                     setSelectedChat(chat);
-                    console.log("selectedChat", selectedChat);
-                    console.log(typeof selectedChat);
+          
                   }}
                   className="cursor-pointer px-3 py-3 rounded-lg"
                   background={
@@ -108,7 +107,11 @@ const MyChats = ({ refetch }) => {
                 >
                   <div className="flex items-center">
                     <Avatar size={"sm"} className="mr-1">
-                      <AvatarBadge boxSize="1.25em" bg="green.500" />
+                      {onlineUsers.includes(
+                        getSenderId(chat.isGroupChat, loggedUser, chat.users)
+                      ) ? (
+                        <AvatarBadge boxSize="1.25em" bg="green.400" />
+                      ) : null}
                     </Avatar>
                     <Text>
                       {!chat.isGroupChat

@@ -10,9 +10,6 @@ const MessagePage = () => {
   const { user } = ChatState();
   const [refetch , setRefetch]= useState(false)
 
-  useEffect(()=>{
-    console.log(user)
-  },[])
   return (
     <div style={{ width: "100%" }}>
       {user && <SideDrawer />}

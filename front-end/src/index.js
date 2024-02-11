@@ -5,13 +5,16 @@ import App from "./App";
 import { ChakraProvider } from "@chakra-ui/react";
 import { BrowserRouter } from "react-router-dom";
 import ChatProvider from "./Context/ChatProvider";
+import { SocketContextProvider } from "./Context/SocketContext";
 
 const AppWrapper = () => {
   return (
     <ChakraProvider>
       <BrowserRouter>
         <ChatProvider>
-          <App />
+          <SocketContextProvider>
+            <App />
+          </SocketContextProvider>
         </ChatProvider>
       </BrowserRouter>
     </ChakraProvider>
