@@ -88,28 +88,84 @@ const SingleChat = ({ refetch, setRefetch }) => {
       } else {
       }
     });
-    return () => {
-      socket?.off("userTyping");
-      socket?.off("newMessage");
-    };
-  }, [socket, setMessages, messages, refetchChats]);
 
-  useEffect(() => {
+    if (selectedChat?._id !== userTyping) {
+      setisUserTyping(false);
+    }
+
     socket?.on("userTyping", ({ currentUserName, selectedChatId }) => {
       console.log(currentUserName, "is typing");
-      if (selectedChatId != selectedChat?._id) return;
-      // setisUserTyping(true);
-      // setUserTyping(currentUserName);
+      if (selectedChatId !== selectedChat?._id) {
+        setisUserTyping(false);
+        setUserTyping("");
+        console.log("user no longer typing");
+      } else {
+        setisUserTyping(true);
+        setUserTyping(selectedChatId);
+        console.log("user typing");
+      }
+    });
+
+    socket?.on("userstopTyping", ({ currentUserName, selectedChatId }) => {
+      if (selectedChatId !== selectedChat?._id) {
+        setisUserTyping(false);
+        setUserTyping("");
+      } else {
+        setisUserTyping(false);
+        setUserTyping("");
+      }
     });
 
     if (newMessage === "") {
       socket?.off("userTyping");
       return;
     }
+
     return () => {
       socket?.off("userTyping");
+      socket?.off("userstopTyping");
+      socket?.off("newMessage");
     };
-  });
+  }, [
+    socket,
+    setMessages,
+    messages,
+    refetchChats,
+    selectedChat,
+    setSelectedChat,
+    isUserTyping,
+    userTyping,
+    setUserTyping,
+    setisUserTyping,
+  ]);
+
+  // useEffect(() => {
+  //   if (selectedChat?._id !== userTyping) {
+  //     setisUserTyping(false);
+  //   }
+
+  //   socket?.on("userTyping", ({ currentUserName, selectedChatId }) => {
+  //     setisUserTyping(false);
+  //     console.log(currentUserName, "is typing");
+  //     if (selectedChatId != selectedChat?._id) {
+  //       setisUserTyping(false);
+  //       setUserTyping("");
+  //       console.log("user no longer typing");
+  //     } else {
+  //       setisUserTyping(true);
+  //       setUserTyping(selectedChatId);
+  //       console.log("user typing");
+  //     }
+  //   });
+
+  //   if (newMessage === "") {
+  //     socket?.off("userTyping");
+  //     return;
+  //   }
+  //   return () => {
+  //     socket?.off("userTyping");
+  //   };
+  // });
 
   const sendMessage = async (event) => {
     if (event.key === "Enter" && newMessage) {
@@ -158,13 +214,16 @@ const SingleChat = ({ refetch, setRefetch }) => {
       });
     }
 
-    let lastTypingTime = new Date().getTime();
-    var timerLength = 2000;
+    var timerLength = 1500;
     setTimeout(() => {
-      var timeNow = new Date().getTime();
-      var timeDiff = timeNow - lastTypingTime;
-      if (timeDiff >= timerLength && typing) {
+      if (typing) {
         setTyping(false);
+        socket.emit("stoptyping", {
+          currentUserId,
+          currentUserName,
+          selectedChatId,
+          selectedChatUserIds,
+        });
       }
     }, timerLength);
   };
@@ -220,15 +279,16 @@ const SingleChat = ({ refetch, setRefetch }) => {
             )}
             <FormControl onKeyDown={sendMessage} isRequired marginTop={3}>
               {isUserTyping ? (
-                <div>
+                <div className="h-8">
                   <Lottie
                     options={defaultOptions}
-                    width={70}
-                    style={{ marginBottom: 15, marginLeft: 0 }}
+                    className="ml-0"
+                    width={60}
+                    style={{ marginLeft: 0 }}
                   />
                 </div>
               ) : (
-                <></>
+                <div className="h-8"></div>
               )}
               <Input
                 variant={"filled"}
