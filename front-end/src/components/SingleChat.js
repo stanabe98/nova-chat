@@ -19,6 +19,7 @@ import ScrollableChat from "./ScrollableChat";
 import Lottie from "react-lottie";
 import animationData from "../animations/typingAnime.json";
 import { useSocketContext } from "../Context/SocketContext";
+import { deleteUserNotifications } from "./helpers/methods";
 
 const SingleChat = ({ refetch, setRefetch }) => {
   const [messages, setMessages] = useState([]);
@@ -41,12 +42,12 @@ const SingleChat = ({ refetch, setRefetch }) => {
     user,
     selectedChat,
     setSelectedChat,
-    notification,
-    setNotification,
     getConfig,
     postConfig,
     refetchChats,
     setRefetchChats,
+    refetchUserInfo,
+    setRefetchUserInfo,
   } = ChatState();
   const toast = useToast();
   const { socket } = useSocketContext();
@@ -83,47 +84,17 @@ const SingleChat = ({ refetch, setRefetch }) => {
       console.log("new message-----------", newMessage.chat._id);
       setRefetchChats(!refetchChats);
 
-      if (selectedChat?._id === newMessage.chat._id) {
+      if (selectedChat !== "" && selectedChat?._id === newMessage.chat._id) {
+        deleteUserNotifications(user._id, newMessage.chat._id);
         setMessages([...messages, newMessage]);
+        console.log("executing if");
       } else {
+        console.log("executing else");
+        setRefetchUserInfo(!refetchUserInfo);
       }
     });
-
-    if (selectedChat?._id !== userTyping) {
-      setisUserTyping(false);
-    }
-
-    socket?.on("userTyping", ({ currentUserName, selectedChatId }) => {
-      console.log(currentUserName, "is typing");
-      if (selectedChatId !== selectedChat?._id) {
-        setisUserTyping(false);
-        setUserTyping("");
-        console.log("user no longer typing");
-      } else {
-        setisUserTyping(true);
-        setUserTyping(selectedChatId);
-        console.log("user typing");
-      }
-    });
-
-    socket?.on("userstopTyping", ({ currentUserName, selectedChatId }) => {
-      if (selectedChatId !== selectedChat?._id) {
-        setisUserTyping(false);
-        setUserTyping("");
-      } else {
-        setisUserTyping(false);
-        setUserTyping("");
-      }
-    });
-
-    if (newMessage === "") {
-      socket?.off("userTyping");
-      return;
-    }
 
     return () => {
-      socket?.off("userTyping");
-      socket?.off("userstopTyping");
       socket?.off("newMessage");
     };
   }, [
@@ -133,39 +104,7 @@ const SingleChat = ({ refetch, setRefetch }) => {
     refetchChats,
     selectedChat,
     setSelectedChat,
-    isUserTyping,
-    userTyping,
-    setUserTyping,
-    setisUserTyping,
   ]);
-
-  // useEffect(() => {
-  //   if (selectedChat?._id !== userTyping) {
-  //     setisUserTyping(false);
-  //   }
-
-  //   socket?.on("userTyping", ({ currentUserName, selectedChatId }) => {
-  //     setisUserTyping(false);
-  //     console.log(currentUserName, "is typing");
-  //     if (selectedChatId != selectedChat?._id) {
-  //       setisUserTyping(false);
-  //       setUserTyping("");
-  //       console.log("user no longer typing");
-  //     } else {
-  //       setisUserTyping(true);
-  //       setUserTyping(selectedChatId);
-  //       console.log("user typing");
-  //     }
-  //   });
-
-  //   if (newMessage === "") {
-  //     socket?.off("userTyping");
-  //     return;
-  //   }
-  //   return () => {
-  //     socket?.off("userTyping");
-  //   };
-  // });
 
   const sendMessage = async (event) => {
     if (event.key === "Enter" && newMessage) {
@@ -197,33 +136,15 @@ const SingleChat = ({ refetch, setRefetch }) => {
 
   const typingHandler = (e) => {
     setNewMessage(e.target.value);
-    const selectedChatUserIds = selectedChat.users.map(({ _id }) => _id);
-    const currentUserId = user._id;
-    const currentUserName = user.name;
-    const selectedChatId = selectedChat._id;
 
     if (!typing) {
       setTyping(true);
-      console.log("typing", selectedChatUserIds);
-
-      socket.emit("typing", {
-        currentUserId,
-        currentUserName,
-        selectedChatId,
-        selectedChatUserIds,
-      });
     }
 
     var timerLength = 1500;
     setTimeout(() => {
       if (typing) {
         setTyping(false);
-        socket.emit("stoptyping", {
-          currentUserId,
-          currentUserName,
-          selectedChatId,
-          selectedChatUserIds,
-        });
       }
     }, timerLength);
   };
@@ -234,13 +155,14 @@ const SingleChat = ({ refetch, setRefetch }) => {
         <>
           <Text
             fontSize={{ base: "28px", md: "30px" }}
-            className="flex pb-3 px-2 items-center"
+            className="flex pb-3 px-2 items-center text-gray-100 font-semibold"
             width={"100%"}
             fontFamily={"Work sans"}
             justifyContent={{ base: "space-between" }}
           >
             <IconButton
               display={{ base: "flex", md: "none" }}
+              className="text-gray-200"
               icon={<ArrowBackIcon />}
               onClick={() => {
                 setSelectedChat("");
@@ -265,10 +187,11 @@ const SingleChat = ({ refetch, setRefetch }) => {
             )}
           </Text>
           <Box
-            className="flex flex-col justify-end p-3 rounded-lg overflow-y-hidden"
+            className="flex flex-col justify-end p-3 rounded-lg overflow-y-hidden
+             shadow-md bg-slate-800 bg-clip-padding backdrop-filter backdrop-blur-md bg-opacity-30
+            "
             width={"100%"}
             height={"100%"}
-            background={"#E8E8E8"}
           >
             {loading ? (
               <Spinner size={"xl"} className="w-20 h-20  self-center m-auto" />
@@ -302,9 +225,24 @@ const SingleChat = ({ refetch, setRefetch }) => {
         </>
       ) : (
         <Box className="flex items-center justify-center pb-3 " height={"100%"}>
-          <Text fontSize={"3xl"} paddingBottom={3} fontFamily={"Work sans"}>
-            Click user to begin a chat
-          </Text>
+          <div className="bg-gray-800 rounded-lg px-1">
+            <Text
+              fontSize={"3xl"}
+              paddingBottom={3}
+              className="text-gray-100"
+              fontFamily={"Work sans"}
+            >
+              {`Welcome ${user.name} 🫡`}
+            </Text>
+            <Text
+              fontSize={"3xl"}
+              paddingBottom={3}
+              className="text-gray-100"
+              fontFamily={"Work sans"}
+            >
+              {`Click on a chat to begin`}
+            </Text>
+          </div>
         </Box>
       )}
     </>

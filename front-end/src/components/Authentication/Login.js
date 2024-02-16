@@ -1,22 +1,14 @@
 import React, { useState } from "react";
-import {
-  Input,
-  FormControl,
-  FormLabel,
-  VStack,
-  InputGroup,
-  InputRightElement,
-  Button,
-  useToast,
-} from "@chakra-ui/react";
+import { useToast } from "@chakra-ui/react";
+import { Input, Button } from "antd";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import "../../components/styles.css";
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
-  const [show, setShow] = useState(false);
 
   const toast = useToast();
   const navigate = useNavigate();
@@ -75,52 +67,49 @@ const Login = () => {
     }
   };
 
-
   return (
-    <VStack spacing={"5px"} color={"black"}>
-      <FormControl id="email" isRequired>
-        <FormLabel>Email</FormLabel>
-        <Input
-          value={email}
-          placeholder="Enter Your Email"
-          onChange={(e) => setEmail(e.target.value)}
-        />
-      </FormControl>
-      <FormControl id="password" isRequired>
-        <FormLabel>Password</FormLabel>
-        <InputGroup>
+    <>
+      <div spacing={"5px"} color={"black"}>
+        <form id="email">
+          <label className="required text-sky-200">Email</label>
           <Input
-            type={show ? "text" : "password"}
-            placeholder="Enter Your Password"
+            className="p-2 text-gray-200 border-black bg-slate-700 hover:bg-slate-700 mt-1 mb-1"
+            value={email}
+            placeholder="Email"
+            onChange={(e) => setEmail(e.target.value)}
+          />
+        </form>
+        <form id="password">
+          <label className="required text-sky-200">Password</label>
+
+          <Input.Password
+            className="p-2 text-gray-200  border-black  bg-slate-700 hover:bg-slate-700 mt-1 mb-1"
+            placeholder="Password"
             value={password}
             onKeyDown={handleKeyDown}
             onChange={(e) => setPassword(e.target.value)}
           />
-        </InputGroup>
-      </FormControl>
+        </form>
 
-      <Button
-        colorScheme="cyan"
-        className="w-full"
-        style={{ marginTop: 15 }}
-        onClick={submitHandler}
-        isLoading={loading}
-      >
-        Login
-      </Button>
-      <Button
-        variant={"solid"}
-        colorScheme="red"
-        className="w-full"
-        style={{ marginTop: 15 }}
-        onClick={() => {
-          setEmail("guest@example.com");
-          setPassword("password123");
-        }}
-      >
-        Guest User
-      </Button>
-    </VStack>
+        <Button
+          className=" flex w-full border-black border rounded-md mt-4 py-5 items-center justify-center"
+          style={{ marginTop: 15 }}
+          onClick={submitHandler}
+          isLoading={loading}
+        >
+          Login
+        </Button>
+        <Button
+          className=" w-full flex border-black border rounded-md mt-4 py-5 items-center justify-center"
+          onClick={() => {
+            setEmail("guest@example.com");
+            setPassword("password123");
+          }}
+        >
+          Guest User
+        </Button>
+      </div>
+    </>
   );
 };
 

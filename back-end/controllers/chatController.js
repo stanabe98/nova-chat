@@ -121,7 +121,6 @@ const renameGroup = asyncHandler(async (req, res) => {
   }
 });
 
-//problem endpoint
 const addToGroup = asyncHandler(async (req, res) => {
   const { chatId, newUserId } = req.body;
   const added = await Chat.findByIdAndUpdate(

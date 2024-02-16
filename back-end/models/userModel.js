@@ -20,8 +20,14 @@ const userModel = mongoose.Schema(
     ],
     notifications: [
       {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Message",
+        chatId: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "Chat",
+        },
+        sender: {
+          type: String,
+          required: true,
+        },
       },
     ],
   },

@@ -4,7 +4,6 @@ const express = require("express");
 
 const app = express();
 
-
 const server = http.createServer(app);
 
 const io = new Server(server, {
@@ -17,7 +16,6 @@ const io = new Server(server, {
 const userSocketMap = {};
 
 const getReceiverSocketId = (receiverId) => {
-
   return userSocketMap[receiverId];
 };
 
@@ -64,7 +62,37 @@ io.on("connection", (socket) => {
     }
   );
 
+  socket.on(
+    "stoptyping",
+    ({
+      currentUserId,
+      currentUserName,
+      selectedChatId,
+      selectedChatUserIds,
+    }) => {
+      const otherUsers = selectedChatUserIds.filter((u) => u !== currentUserId);
 
+      if (otherUsers.length == 1) {
+        const receiverSocketId = getReceiverSocketId(otherUsers);
+        if (receiverSocketId) {
+          io.to(receiverSocketId).emit("userstopTyping", {
+            currentUserName,
+            selectedChatId,
+          });
+        }
+      } else {
+        otherUsers.forEach((user) => {
+          const receiverSocketId = getReceiverSocketId(user);
+          if (receiverSocketId) {
+            io.to(receiverSocketId).emit("userstopTyping", {
+              currentUserName,
+              selectedChatId,
+            });
+          }
+        });
+      }
+    }
+  );
 
   socket.on("disconnect", () => {
     console.log("user disconnected", socket.id);

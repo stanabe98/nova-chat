@@ -4,13 +4,11 @@ import { useNavigate } from "react-router-dom";
 const ChatContext = createContext();
 
 const ChatProvider = ({ children }) => {
-  const [user, setUser] = useState(
-
-  );
-  const [selectedChat, setSelectedChat] = useState();
+  const [user, setUser] = useState();
+  const [selectedChat, setSelectedChat] = useState("");
   const [chats, setChats] = useState([]);
-  const [notification, setNotification] = useState([]);
-
+  const [userNotfications, setUserNotifications] = useState([]);
+  const [refetchUserInfo, setRefetchUserInfo] = useState(false);
   const [refetchChats, setRefetchChats] = useState(false);
   const [loginConfig, seLoginConfig] = useState({});
 
@@ -48,8 +46,7 @@ const ChatProvider = ({ children }) => {
         setSelectedChat,
         user,
         setUser,
-        notification,
-        setNotification,
+
         chats,
         setChats,
         getConfig,
@@ -57,6 +54,10 @@ const ChatProvider = ({ children }) => {
         loginConfig,
         refetchChats,
         setRefetchChats,
+        refetchUserInfo,
+        setRefetchUserInfo,
+        userNotfications,
+        setUserNotifications,
       }}
     >
       {children}

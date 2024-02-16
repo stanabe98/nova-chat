@@ -11,14 +11,15 @@ import {
   ModalContent,
   useToast,
   FormControl,
-  Input,
   Box,
   Spinner,
 } from "@chakra-ui/react";
+import { Input } from "antd";
 import { ChatState } from "../../Context/ChatProvider";
 import axios from "axios";
 import UserListItem from "../UserAvatar/UserListItem";
 import UserProfileItem from "../UserAvatar/UserProfileItem";
+import "../../components/styles.css";
 
 const GroupChatModal = ({ children }) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -38,9 +39,12 @@ const GroupChatModal = ({ children }) => {
     }
     try {
       setLoading(true);
-  
-      const { data } = await axios.get(`/api/user?search=${search}`, getConfig(user));
-    
+
+      const { data } = await axios.get(
+        `/api/user?search=${search}`,
+        getConfig(user)
+      );
+
       setLoading(false);
       setSearchResults(data);
     } catch (error) {
@@ -118,14 +122,19 @@ const GroupChatModal = ({ children }) => {
           <ModalHeader
             fontSize={"35px"}
             fontFamily={"Work sans"}
-            className="flex justify-center"
+            className="flex justify-center bg-slate-800 text-slate-100"
           >
             Create Group Chat
           </ModalHeader>
           <ModalCloseButton />
-          <ModalBody className="flex flex-col items-center">
+          <ModalBody
+            className="flex flex-col items-center bg-gray-300
+  
+          "
+          >
             <FormControl>
               <Input
+                className="p-2 text-gray-200 border-black bg-slate-700 hover:bg-slate-700 mt-1 mb-1"
                 placeholder="Chat name"
                 marginBottom={3}
                 onChange={(e) => setGroupChatName(e.target.value)}
@@ -133,6 +142,7 @@ const GroupChatModal = ({ children }) => {
             </FormControl>
             <FormControl>
               <Input
+                className="p-2 text-gray-200 border-black bg-slate-700 hover:bg-slate-700 mt-1 mb-1"
                 placeholder="Add Users"
                 marginBottom={1}
                 onChange={(e) => handleSearch(e.target.value)}
@@ -163,7 +173,7 @@ const GroupChatModal = ({ children }) => {
             )}
           </ModalBody>
 
-          <ModalFooter>
+          <ModalFooter className="bg-gray-300 text-slate-100">
             <Button colorScheme="cyan" onClick={handleSubmit}>
               Create Chat
             </Button>

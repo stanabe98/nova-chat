@@ -2,20 +2,23 @@ const expressAsyncHandler = require("express-async-handler");
 const Message = require("../models/messageModel");
 const User = require("../models/userModel");
 const Chat = require("../models/chatModel");
-const {  getReceiverSocketId, io} = require("../socket/socket");
-
+const { getReceiverSocketId, io } = require("../socket/socket");
 
 const sendMessage = expressAsyncHandler(async (req, res) => {
   const { content, chatId } = req.body;
-
 
   if (!content || !chatId) {
     console.log("Invalid data passed");
     return res.sendStatus(400);
   }
   const chatUsers = await Chat.findById(chatId);
+  const currentChat = await Chat.findById(chatId).populate("users");
 
-  if (!chatUsers.users.includes(req.user._id)) {
+  const isSenderinChat = currentChat.users.some(
+    (u) => u._id.toString() === req.user._id.toString()
+  );
+
+  if (!isSenderinChat) {
     res.status(401);
     throw new Error("You are not a chat participant");
   }
@@ -39,12 +42,46 @@ const sendMessage = expressAsyncHandler(async (req, res) => {
       latestMessage: message,
     });
 
-    chatUsers.users.forEach((userId) => {
-      const receiverSocketId = getReceiverSocketId(userId);
-      if(receiverSocketId){
+    //send notification
+    const otherUsers = chatUsers.users.filter(
+      (u) => u.toString() !== req.user._id.toString()
+    );
+
+    if (currentChat.isGroupChat) {
+      await User.where("_id")
+        .in(otherUsers)
+        .updateMany({
+          $addToSet: {
+            notifications: { chatId: chatId, sender: currentChat.chatName },
+          },
+        });
+    } else {
+      await User.where("_id")
+        .in(otherUsers)
+        .updateMany({
+          $addToSet: {
+            notifications: { chatId: chatId, sender: req.user.name },
+          },
+        });
+    }
+
+    currentChat.users.forEach((u) => {
+      console.log(u._id);
+
+      const receiverSocketId = getReceiverSocketId(u._id);
+      if (receiverSocketId) {
         io.to(receiverSocketId).emit("newMessage", message);
       }
     });
+
+
+    // chatUsers.users.forEach((userId) => {
+    //   console.log("userid", userId);
+    //   const receiverSocketId = getReceiverSocketId(userId);
+    //   if (receiverSocketId) {
+    //     io.to(receiverSocketId).emit("newMessage", message);
+    //   }
+    // });
 
     res.json(message);
   } catch (error) {

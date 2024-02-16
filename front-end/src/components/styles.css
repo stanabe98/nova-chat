@@ -1,6 +1,76 @@
 .messages {
-    display: flex;
-    flex-direction: column;
-    overflow-y: scroll;
-    scrollbar-width: none;
+  display: flex;
+  flex-direction: column;
+  overflow-y: scroll;
+  scrollbar-width: none;
+}
+
+.ant-input::placeholder {
+  color: #e5e7eb;
+  opacity: 0.5;
+}
+
+input[type="file"] {
+  display: none;
+}
+
+.uploadBtn {
+  display: inline-block;
+  margin-top: 1rem;
+  padding: 0.4rem;
+  text-align: center;
+  cursor: pointer;
+  border: 1px solid black;
+  background-color: #334155;
+  border-radius: 5px;
+  color: rgba(229, 231, 235, 0.7);
+}
+
+.uploadBtn:hover {
+  color: #e5e7eb;
+  border-color: #4096ff;
+}
+
+.anticon-eye-invisible > svg,
+.anticon-eye > svg {
+  color: #e5e7eb;
+  opacity: 0.5;
+}
+
+.ant-btn {
+  background-image: linear-gradient(to bottom right, #1e293b, #0f172a);
+  color: rgba(229, 231, 235, 0.8);
+  font-size: 16px;
+}
+.ant-btn:hover {
+  background-image: linear-gradient(
+    to bottom right,
+    #0f172a,
+    #1e293b
+  ) !important;
+  color: #e5e7eb !important;
+}
+
+.required::after {
+  content: "*";
+  color: #f87171;
+  margin-left: 5px;
+}
+
+button[tabindex="-1"] {
+  color: rgba(229, 231, 235, 0.8);
+}
+
+button[tabindex="0"] {
+  background-color: #164e63 !important;
+  color: #e5e7eb !important;
+}
+
+
+.ant-input:focus {
+  background-color: #374151 !;
+}
+
+.chakra-menu__menu-list > span {
+    background-color: #164e63 !important;
 }

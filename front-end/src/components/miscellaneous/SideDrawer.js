@@ -22,7 +22,7 @@ import {
 } from "@chakra-ui/react";
 import { ChevronDownIcon } from "@chakra-ui/icons";
 import MailIcon from "@mui/icons-material/Mail";
-
+import logo from "../../images/logo2.png";
 import { ChatState } from "../../Context/ChatProvider";
 import { useNavigate } from "react-router-dom";
 import ProfileModal from "./ProfileModal";
@@ -30,6 +30,8 @@ import axios from "axios";
 import ChatLoading from "../ChatLoading";
 import UserListItem from "../UserAvatar/UserListItem";
 import { getSender } from "../../config/ChatLogics";
+import { deleteUserNotifications } from "../helpers/methods";
+import "../../components/styles.css"
 
 const SideDrawer = () => {
   const [search, setSearch] = useState("");
@@ -42,18 +44,66 @@ const SideDrawer = () => {
     selectedChat,
     chats,
     setChats,
-    notification,
-    setNotification,
     getConfig,
     postConfig,
+    refetchUserInfo,
+    setRefetchUserInfo,
+    userNotfications,
+    setUserNotifications,
   } = ChatState();
   const navigate = useNavigate();
   const toast = useToast();
   const { isOpen, onOpen, onClose } = useDisclosure();
 
+  useEffect(() => {
+    const fetchdata = async () => {
+      try {
+        const { data } = await axios.get(
+          `/api/user/currentuser`,
+          getConfig(user)
+        );
+        const uniqueChatIds = data.notifications.reduce((acc, curr) => {
+          const existingIndex = acc.findIndex(
+            (item) => item.chatId === curr.chatId
+          );
+
+          if (existingIndex === -1) {
+            acc.push({ chatId: curr.chatId, sender: curr.sender });
+          }
+          return acc;
+        }, []);
+
+        setUserNotifications(uniqueChatIds);
+        console.log("data is " + JSON.stringify(uniqueChatIds));
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+    fetchdata();
+  }, [refetchUserInfo]);
+
+  useEffect(() => {
+    const containsChatId = userNotfications.some(
+      (n) => n.chatId === selectedChat._id
+    );
+    if (containsChatId) {
+      console.log("yessss");
+      deleteUserNotifications(user._id, selectedChat._id);
+      setRefetchUserInfo(!refetchUserInfo);
+    } else {
+      console.log("noooo");
+    }
+  }, [selectedChat, setSelectedChat]);
+
   const logoutHandler = () => {
     localStorage.removeItem("userInfo");
     navigate("/");
+  };
+
+  const selectChatByID = (chatId) => {
+    const foundChat = chats.filter((s) => s._id === chatId);
+    console.log("selectedChat", foundChat);
+    setSelectedChat(foundChat[0]);
   };
 
   const handleSearch = async () => {
@@ -127,9 +177,11 @@ const SideDrawer = () => {
   return (
     <>
       <Box
-        className="flex justify-between items-center bg-white w-full"
+        className="flex justify-between items-center  w-full border-black
+            shadow-md bg-gray-400 bg-clip-padding backdrop-filter backdrop-blur-md bg-opacity-20 
+        "
         padding="5px 10px 5px 10px"
-        borderWidth="5px"
+        borderWidth="3px"
       >
         <Tooltip
           label="Search users to chat"
@@ -143,8 +195,14 @@ const SideDrawer = () => {
             </Text>
           </Button>
         </Tooltip>
-        <Text className="text-2xl" fontFamily="Work sans">
+        <Text
+          className="text-2xl flex items-center text-gray-100 font-semibold text-3xl"
+          fontFamily="Work sans"
+        >
           Nova-Chat
+          <div >
+            <img width="40rem" src={logo} alt="Logo" />
+          </div>
         </Text>
         <div>
           <Menu>
@@ -153,7 +211,7 @@ const SideDrawer = () => {
               paddingRight={2}
               style={{ position: "relative" }}
             >
-              {notification.length ? (
+              {userNotfications.length ? (
                 <div
                   className="w-4 h-4 rounded-full bg-cyan-300 p-0 ml-4 -mb-4 font-bold "
                   style={{
@@ -162,30 +220,31 @@ const SideDrawer = () => {
                     animation: "bounceIn 0.5s ease",
                   }}
                 >
-                  {notification.length}
+                  {userNotfications.length}
                 </div>
               ) : null}
 
               <MailIcon color="action" style={{ zIndex: "10" }} />
             </MenuButton>
             <MenuList paddingLeft={2}>
-              {!notification.length && "No new mesages"}
-              {notification.map((item) => (
+              {!userNotfications.length && "No new mesages"}
+              {userNotfications.map((item) => (
                 <MenuItem
-                  key={item._id}
+                  key={item.chatId}
                   onClick={() => {
-                    setSelectedChat(item.chat);
-                    setNotification(notification.filter((n) => n !== item));
+                    selectChatByID(item.chatId);
+                    deleteUserNotifications(user._id, item.chatId);
+                    setUserNotifications(
+                      userNotfications.filter((n) => n.chatId != item.chatId)
+                    );
                   }}
                 >
-                  {item.chat.isGroupChat
-                    ? `New message in ${item.chat.chatName}`
-                    : `New message from ${getSender(user, item.chat.users)}`}
+                  {`New message from ${item.sender}`}
                 </MenuItem>
               ))}
             </MenuList>
           </Menu>
-          <Menu>
+          <Menu className="z-100">
             <MenuButton as={Button} rightIcon={<ChevronDownIcon />}>
               <Avatar
                 cursor={"pointer"}
@@ -193,9 +252,9 @@ const SideDrawer = () => {
                 name={user ? user.name : "Stanley"}
               />
             </MenuButton>
-            <MenuList>
+            <MenuList className="z-100">
               <ProfileModal user={user}>
-                <MenuItem>My Profile</MenuItem>
+                <MenuItem className="text-black">My Profile</MenuItem>
               </ProfileModal>
               <MenuDivider />
               <MenuItem onClick={logoutHandler}>Logout</MenuItem>

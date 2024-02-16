@@ -1,16 +1,11 @@
 import React, { useState } from "react";
-import {
-  Input,
-  FormControl,
-  FormLabel,
-  VStack,
-  InputGroup,
-  InputRightElement,
-  Button,
-  useToast,
-} from "@chakra-ui/react";
+import { VStack, useToast } from "@chakra-ui/react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { Input, Button } from "antd";
+import { UploadOutlined } from "@ant-design/icons";
+import "../../components/styles.css";
+
 
 const Signup = () => {
   const [name, setName] = useState("");
@@ -18,7 +13,6 @@ const Signup = () => {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [pic, setPic] = useState("");
-  const [show, setShow] = useState(false);
   const [loading, setLoading] = useState(false);
   const toast = useToast();
   const navigate = useNavigate();
@@ -130,60 +124,64 @@ const Signup = () => {
   };
 
   return (
-    <VStack spacing={"5px"} color={"black"}>
-      <FormControl id="first-name" isRequired>
-        <FormLabel>Name</FormLabel>
+    <div spacing={"5px"} color={"black"}>
+      <form id="first-name">
+        <label className="required text-sky-200">Name</label>
         <Input
-          placeholder="Enter Your Name"
+          placeholder="Name"
+          className="p-2 text-gray-200 border-black bg-slate-700 hover:bg-slate-700 mt-1 mb-1"
           onChange={(e) => setName(e.target.value)}
         />
-      </FormControl>
-      <FormControl id="email" isRequired>
-        <FormLabel>Email</FormLabel>
+      </form>
+      <form id="email">
+        <label className="required text-sky-200">Email</label>
+
         <Input
-          placeholder="Enter Your Email"
+          placeholder="Email"
+          className="p-2 text-gray-200 border-black bg-slate-700 hover:bg-slate-700 mt-1 mb-1"
           onChange={(e) => setEmail(e.target.value)}
         />
-      </FormControl>
-      <FormControl id="password" isRequired>
-        <FormLabel>Password</FormLabel>
-        <InputGroup>
-          <Input
-            type={show ? "text" : "password"}
-            placeholder="Enter Your Password"
-            onChange={(e) => setPassword(e.target.value)}
-          />
-        </InputGroup>
-      </FormControl>
-      <FormControl id="confirm-password" isRequired>
-        <FormLabel>Confirm Password</FormLabel>
-        <InputGroup>
-          <Input
-            type={show ? "text" : "password"}
-            placeholder="Enter Your Password"
-            onChange={(e) => setConfirmPassword(e.target.value)}
-          />
-        </InputGroup>
-      </FormControl>
-      <FormControl id="pic" isRequired>
-        <FormLabel>Upload your Picture</FormLabel>
-        <Input
+      </form>
+      <form id=" password">
+        <label className="required text-sky-200">Password</label>
+
+        <Input.Password
+          className="p-2 text-gray-200 border-black bg-slate-700 hover:bg-slate-700 mt-1 mb-1"
+          placeholder="Password"
+          onChange={(e) => setPassword(e.target.value)}
+        />
+      </form>
+      <form id="confirm-password">
+        <label className="required text-sky-200">Confirm Password</label>
+
+        <Input.Password
+          placeholder="Confirm Password"
+          className="p-2 text-gray-200 border-black bg-slate-700 hover:bg-slate-700 mt-1  "
+          onChange={(e) => setConfirmPassword(e.target.value)}
+        />
+      </form>
+      <form id="pic">
+        <label for="uploadInput" className=" uploadBtn text-sky-200">
+          Upload your picture <UploadOutlined></UploadOutlined>
+        </label>
+        <label className="required"></label>
+        <input
           type={"file"}
-          padding={1.5}
+          id="uploadInput"
+          className=" p-2 customUpload text-gray-200 border-none bg-slate-700 hover:bg-slate-700"
           accept="image/*"
           onChange={(e) => postDetails(e.target.files[0])}
         />
-      </FormControl>
+      </form>
       <Button
-        colorScheme="cyan"
-        className="w-full"
+        className=" w-full flex border-black border rounded-md mt-4 py-5 items-center justify-center"
         style={{ marginTop: 15 }}
         onClick={submitHandler}
         isLoading={loading}
       >
-        Sign up
+        Sign Up
       </Button>
-    </VStack>
+    </div>
   );
 };
 
