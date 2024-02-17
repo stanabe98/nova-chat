@@ -9,8 +9,8 @@ const ChatBox = ({refetch, setRefetch}) => {
   return (
     <Box
       display={{ base: selectedChat ? "flex" : "none", md: "flex" }}
-      className="flex-col items-center p-3 bg-white rounded-lg border ml-2 border-black
-      shadow-md bg-gray-400 bg-clip-padding backdrop-filter backdrop-blur-md bg-opacity-20
+      className="flex-col items-center p-3 rounded-lg border ml-2 border-black
+      shadow-md bg-gray-400 bg-clip-padding  backdrop-filter bg-opacity-20
       "
       width={{ base: "100%", md: "68%" }}
     >

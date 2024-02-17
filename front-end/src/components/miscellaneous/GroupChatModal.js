@@ -6,7 +6,6 @@ import {
   ModalFooter,
   ModalCloseButton,
   ModalBody,
-  Button,
   ModalOverlay,
   ModalContent,
   useToast,
@@ -14,7 +13,7 @@ import {
   Box,
   Spinner,
 } from "@chakra-ui/react";
-import { Input } from "antd";
+import {Input , Button } from "antd";
 import { ChatState } from "../../Context/ChatProvider";
 import axios from "axios";
 import UserListItem from "../UserAvatar/UserListItem";
@@ -174,9 +173,13 @@ const GroupChatModal = ({ children }) => {
           </ModalBody>
 
           <ModalFooter className="bg-gray-300 text-slate-100">
-            <Button colorScheme="cyan" onClick={handleSubmit}>
+            <button
+            
+              className="group-chat-btn"
+              onClick={handleSubmit}
+            >
               Create Chat
-            </Button>
+            </button>
           </ModalFooter>
         </ModalContent>
       </Modal>

@@ -4,20 +4,21 @@ import { useSocketContext } from "../Context/SocketContext";
 import {
   useToast,
   Box,
-  Button,
   Stack,
   Text,
   Avatar,
   AvatarBadge,
 } from "@chakra-ui/react";
-import { AddIcon } from "@chakra-ui/icons";
+import { GroupAddOutlined } from "@mui/icons-material";
 import ChatLoading from "./ChatLoading";
 import { getSender, getSenderId } from "../config/ChatLogics";
 import GroupChatModal from "./miscellaneous/GroupChatModal";
 import axios from "axios";
+import "../components/styles.css";
 
 const MyChats = ({ refetch }) => {
   const [loggedUser, setLoggedUser] = useState();
+
   const {
     selectedChat,
     setSelectedChat,
@@ -31,7 +32,6 @@ const MyChats = ({ refetch }) => {
     setUserNotifications,
   } = ChatState();
   const { onlineUsers } = useSocketContext();
-  const [latestMessage, setLatestMessage] = useState();
   const toast = useToast();
 
   const fetchChats = async () => {
@@ -83,33 +83,30 @@ const MyChats = ({ refetch }) => {
     <Box
       display={{ base: selectedChat ? "none" : "flex", md: "flex" }}
       width={{ base: "100%", md: "33%" }}
-      className="flex flex-col items-center p-3 bg-white rounded-lg border-black
+      className="flex flex-col items-center p-3  rounded-lg border-black
       shadow-md bg-gray-400 bg-clip-padding backdrop-filter backdrop-blur-md bg-opacity-20
       "
     >
       <Box
-        className="flex w-full justify-between items-center pb-3 px-3 text-gray-50
+        className="flex w-full justify-between items-center pb-3 px-1 text-gray-50 font-bold
         "
         fontSize={{ base: "28px", md: "30px" }}
         fontFamily={"Work sans"}
       >
-        My Chats
+        Chats
         <GroupChatModal>
-          <Button
-            display={"flex"}
-            fontSize={{ base: "17px", md: "10px", lg: "17px" }}
-            rightIcon={<AddIcon />}
+          <button
+            style={{ padding: "0.1rem" }}
+            className="group-chat-btn border-black flex items-center w-14 justify-center "
           >
-            Create new group chat
-          </Button>
+            <GroupAddOutlined style={{ color: "#e5e7eb", fontSize: "2rem" }} />
+          </button>
         </GroupChatModal>
       </Box>
 
       <Box
-        // background={"#F8F8F8"}
         className="flex flex-col p-3 w-full h-full overflow-y-hidden rounded-lg
-        shadow-md bg-gray-700 bg-clip-padding backdrop-filter backdrop-blur-md bg-opacity-10
-        
+        shadow-md backdrop-filter  bg-opacity-60 bg-black bg-clip-padding
         "
       >
         {chats ? (
@@ -126,13 +123,13 @@ const MyChats = ({ refetch }) => {
                   className="cursor-pointer px-3 py-3 rounded-lg"
                   background={
                     selectedChat && selectedChat._id === chat._id
-                      ? "#38B2AC"
-                      : "#E8E8E8"
+                      ? "#0e7490"
+                      : "#334155"
                   }
                   color={
                     selectedChat && selectedChat._id === chat._id
                       ? "white"
-                      : "black"
+                      : "white"
                   }
                   key={chat._id}
                 >
@@ -151,9 +148,7 @@ const MyChats = ({ refetch }) => {
                     <div className="h-14 overflow-hidden ">
                       <Text
                         className={`text-lg ${
-                          isMessageUnread(chat._id, chat)
-                            ? "font-bold"
-                            : "font-semibold"
+                          isMessageUnread(chat._id, chat) ? "font-bold" : ""
                         }`}
                       >
                         {!chat.isGroupChat

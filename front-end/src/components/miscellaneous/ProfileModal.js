@@ -1,17 +1,16 @@
 import React from "react";
 import {
   useDisclosure,
-  IconButton,
   Modal,
   ModalOverlay,
   ModalContent,
   ModalHeader,
   ModalFooter,
   ModalBody,
-  ModalCloseButton,
-  Button, Image, Text
+  ModalCloseButton, Image, Text
 } from "@chakra-ui/react";
-import { ViewIcon } from "@chakra-ui/icons";
+import {InfoCircleOutlined} from "@ant-design/icons"
+import "../../components/styles.css"
 
 const ProfileModal = ({ user, children }) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -23,11 +22,7 @@ const ProfileModal = ({ user, children }) => {
       {children ? (
         <span onClick={onOpen}>{children}</span>
       ) : (
-        <IconButton
-          display={{ base: "flex" }}
-          icon={<ViewIcon />}
-          onClick={onOpen}
-        />
+        <InfoCircleOutlined className="hover:scale-105" onClick={onOpen} />
       )}
       <Modal size={"lg"} isOpen={isOpen} onClose={onClose} isCentered>
         <ModalOverlay />
@@ -35,31 +30,43 @@ const ProfileModal = ({ user, children }) => {
           <ModalHeader
             fontSize="45px"
             fontFamily="Work sans"
-            className="flex justify-center"
+            className="flex justify-center
+              bg-zinc-800 text-gray-100
+            
+            "
           >
-            { user.name }
+            {user.name}
           </ModalHeader>
           <ModalCloseButton />
-          <ModalBody className="flex flex-col items-center justify-between">
+          <ModalBody
+            className="flex flex-col items-center justify-between
+            bg-zinc-800 text-gray-100
+          
+          "
+          >
             <Image
               borderRadius={"full"}
               boxSize={"150px"}
-              src={
-                user.pic
-              }
-              alt={user.name }
+              src={user.pic}
+              alt={user.name}
             />
-            <Text fontSize={{base:"28px", md:"30px"}}
-                fontFamily="Work sans"
+            <Text
+              fontSize={{ base: "28px", md: "30px" }}
+              fontFamily="Work sans"
             >
-                Email: {user.email}
+              Email: {user.email}
             </Text>
           </ModalBody>
 
-          <ModalFooter>
-            <Button colorScheme="blue" mr={3} onClick={onClose}>
+          <ModalFooter className=" bg-zinc-800">
+            <button
+              className="group-chat-btn text-xl text-gray-200"
+              style={{ paddingInline: "1rem" }}
+              mr={3}
+              onClick={onClose}
+            >
               Close
-            </Button>
+            </button>
           </ModalFooter>
         </ModalContent>
       </Modal>

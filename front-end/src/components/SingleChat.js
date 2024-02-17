@@ -6,7 +6,6 @@ import {
   IconButton,
   Spinner,
   FormControl,
-  Input,
   useToast,
 } from "@chakra-ui/react";
 import { ArrowBackIcon } from "@chakra-ui/icons";
@@ -20,6 +19,7 @@ import Lottie from "react-lottie";
 import animationData from "../animations/typingAnime.json";
 import { useSocketContext } from "../Context/SocketContext";
 import { deleteUserNotifications } from "./helpers/methods";
+import { NavigationOutlined } from "@mui/icons-material";
 
 const SingleChat = ({ refetch, setRefetch }) => {
   const [messages, setMessages] = useState([]);
@@ -149,6 +149,19 @@ const SingleChat = ({ refetch, setRefetch }) => {
     }, timerLength);
   };
 
+  const greetUser = () => {
+    const currentTime = new Date();
+    const currentHour = currentTime.getHours();
+
+    if (currentHour >= 5 && currentHour < 12) {
+      return "Good morning";
+    } else if (currentHour >= 12 && currentHour < 17) {
+      return "Good afternoon";
+    } else {
+      return "Good evening";
+    }
+  };
+
   return (
     <>
       {selectedChat ? (
@@ -188,13 +201,18 @@ const SingleChat = ({ refetch, setRefetch }) => {
           </Text>
           <Box
             className="flex flex-col justify-end p-3 rounded-lg overflow-y-hidden
-             shadow-md bg-slate-800 bg-clip-padding backdrop-filter backdrop-blur-md bg-opacity-30
-            "
+
+              bg-zinc-800 bg-clip-padding backdrop-filter backdrop-blur-sm bg-opacity-80
+             "
             width={"100%"}
             height={"100%"}
           >
             {loading ? (
-              <Spinner size={"xl"} className="w-20 h-20  self-center m-auto" />
+              <Spinner
+                size={"xl"}
+                color="white"
+                className="w-20 h-20 self-center m-auto"
+              />
             ) : (
               <div className="messages">
                 <ScrollableChat messages={messages} />
@@ -213,34 +231,43 @@ const SingleChat = ({ refetch, setRefetch }) => {
               ) : (
                 <div className="h-8"></div>
               )}
-              <Input
-                variant={"filled"}
-                bg={"#E0E0E0"}
-                placeholder="Message"
-                onChange={typingHandler}
-                value={newMessage}
-              />
+              <div className="flex items-center bg-slate-700 rounded-md custom-inputdiv border border-black">
+                <input
+                  className="w-full 
+               bg-slate-700  pl-2 py-2 w-full rounded-md mr-1 text-white
+              "
+                  placeholder="Message"
+                  onChange={typingHandler}
+                  value={newMessage}
+                />
+                <NavigationOutlined
+                  style={{
+                    cursor: "pointer",
+                    color: "#e5e7eb",
+                    fontSize: "2rem",
+                    transform: "rotate(90deg)",
+                    marginRight: "0.2rem",
+                  }}
+                  onClick={sendMessage}
+                />
+              </div>
             </FormControl>
           </Box>
         </>
       ) : (
-        <Box className="flex items-center justify-center pb-3 " height={"100%"}>
-          <div className="bg-gray-800 rounded-lg px-1">
+        <Box
+          className="flex items-center justify-center pb-3 mb-16 "
+          height={"100%"}
+        >
+          <div className="flex bg-zinc-800 rounded-lg px-1 ">
             <Text
-              fontSize={"3xl"}
+              fontSize={"5xl"}
               paddingBottom={3}
               className="text-gray-100"
               fontFamily={"Work sans"}
             >
-              {`Welcome ${user.name} 🫡`}
-            </Text>
-            <Text
-              fontSize={"3xl"}
-              paddingBottom={3}
-              className="text-gray-100"
-              fontFamily={"Work sans"}
-            >
-              {`Click on a chat to begin`}
+              {`${greetUser()} ${user.name}`}
+              <span className="wave">👋</span>
             </Text>
           </div>
         </Box>

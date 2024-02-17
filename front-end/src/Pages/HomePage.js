@@ -12,7 +12,7 @@ import {
 import Login from "../components/Authentication/Login";
 import Signup from "../components/Authentication/Signup";
 import { useNavigate } from "react-router-dom";
-import logo from "../images/logo1.png";
+import logo from "../images/logo2.png";
 import "../components/styles.css";
 
 const HomePage = () => {
@@ -50,7 +50,7 @@ const HomePage = () => {
           Nova-Chat
         </Text>
         <div className="ml-1 ">
-          <img width="40rem" src={logo} alt="Logo" />
+          <img className="chat-logo" width="40rem" src={logo} alt="Logo" />
         </div>
       </Box>
       <Box

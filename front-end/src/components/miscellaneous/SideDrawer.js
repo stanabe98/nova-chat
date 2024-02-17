@@ -3,24 +3,16 @@ import {
   Box,
   useToast,
   Tooltip,
-  Button,
   Text,
-  Menu,
-  MenuButton,
   Avatar,
-  MenuList,
-  MenuItem,
-  MenuDivider,
   Drawer,
   useDisclosure,
   DrawerOverlay,
   DrawerContent,
   DrawerHeader,
   DrawerBody,
-  Input,
   Spinner,
 } from "@chakra-ui/react";
-import { ChevronDownIcon } from "@chakra-ui/icons";
 import MailIcon from "@mui/icons-material/Mail";
 import logo from "../../images/logo2.png";
 import { ChatState } from "../../Context/ChatProvider";
@@ -29,9 +21,10 @@ import ProfileModal from "./ProfileModal";
 import axios from "axios";
 import ChatLoading from "../ChatLoading";
 import UserListItem from "../UserAvatar/UserListItem";
-import { getSender } from "../../config/ChatLogics";
 import { deleteUserNotifications } from "../helpers/methods";
-import "../../components/styles.css"
+import "../../components/styles.css";
+import { SearchOutlined, DownOutlined } from "@ant-design/icons";
+import { Dropdown, Space } from "antd";
 
 const SideDrawer = () => {
   const [search, setSearch] = useState("");
@@ -174,6 +167,74 @@ const SideDrawer = () => {
     }
   };
 
+  const items = [
+    {
+      label: (
+        <ProfileModal user={user}>
+          <div
+            className="h-10 justify-center flex items-center text-base
+          -mx-4 -my-1 z-100 px-4 rounded-md hover:bg-slate-500 hover:-z-50
+          "
+          >
+            My Profile
+          </div>
+        </ProfileModal>
+      ),
+      key: "0",
+    },
+    {
+      label: (
+        <div
+          onClick={logoutHandler}
+          className="h-10 flex justify-center items-center text-base
+          -mx-4 -my-1 px-4 rounded-md hover:bg-slate-500"
+        >
+          Logout
+        </div>
+      ),
+      key: "1",
+    },
+  ];
+
+  const mapnotificationItems = () => {
+    if (userNotfications.length) {
+      return userNotfications.map((item, index) => ({
+        key: index,
+        label: (
+          <div
+            className="
+            flex justify-center items-center text-base
+            h-8 -mx-4 -my-1 px-4 rounded-md hover:bg-slate-500"
+            onClick={() => {
+              selectChatByID(item.chatId);
+              deleteUserNotifications(user._id, item.chatId);
+              setUserNotifications(
+                userNotfications.filter((n) => n.chatId != item.chatId)
+              );
+            }}
+          >
+            {"New message from " + item.sender}
+          </div>
+        ),
+      }));
+    } else {
+      return [
+        {
+          key: 0,
+          label: (
+            <div
+              className="
+            flex justify-center items-center text-base
+            h-8 -mx-4 -my-1 px-4 rounded-sm hover:bg-slate-500"
+            >
+              No new messages
+            </div>
+          ),
+        },
+      ];
+    }
+  };
+
   return (
     <>
       <Box
@@ -188,88 +249,86 @@ const SideDrawer = () => {
           hasArrow
           placeContent={"bottom-end"}
         >
-          <Button variant={"ghost"} onClick={onOpen}>
-            <i class="fa-solid fa-magnifying-glass"></i>
-            <Text className="px-4" display={{ base: "none", md: "flex" }}>
-              Search
-            </Text>
-          </Button>
+          <SearchOutlined
+            className="text-2xl text-gray-50"
+            onClick={onOpen}
+          />
         </Tooltip>
         <Text
-          className="text-2xl flex items-center text-gray-100 font-semibold text-3xl"
+          className="text-2xl flex items-center text-gray-50 font-semibold text-3xl ml-28"
           fontFamily="Work sans"
         >
           Nova-Chat
-          <div >
-            <img width="40rem" src={logo} alt="Logo" />
+          <div>
+            <img
+            className="chat-logo"
+            width="40rem" src={logo} alt="Logo" />
           </div>
         </Text>
-        <div>
-          <Menu>
-            <MenuButton
-              padding={1}
-              paddingRight={2}
-              style={{ position: "relative" }}
-            >
-              {userNotfications.length ? (
-                <div
-                  className="w-4 h-4 rounded-full bg-cyan-300 p-0 ml-4 -mb-4 font-bold "
-                  style={{
-                    position: "absolute",
-                    fontSize: "10px",
-                    animation: "bounceIn 0.5s ease",
-                  }}
-                >
-                  {userNotfications.length}
+        <div className=" items-center  ">
+          <Dropdown
+            placement="bottomRight"
+            className="pb-3 "
+            menu={{ items: mapnotificationItems() }}
+            trigger={["click"]}
+          >
+            <a onClick={(e) => e.preventDefault()}>
+              <button style={{ position: "relative" }} className=" mr-4 ">
+                {userNotfications.length ? (
+                  <div
+                    className="w-4 h-4 rounded-full bg-cyan-300 p-0 ml-4 -mb-4 font-bold "
+                    style={{
+                      position: "absolute",
+                      fontSize: "10px",
+                      animation: "bounceIn 0.5s ease",
+                    }}
+                  >
+                    {userNotfications.length}
+                  </div>
+                ) : null}
+                <div className=" h-full">
+                  <MailIcon
+                    className="text-gray-50 mx-5 mb-1"
+                    style={{ zIndex: "10" }}
+                  />
                 </div>
-              ) : null}
+              </button>
+            </a>
+          </Dropdown>
 
-              <MailIcon color="action" style={{ zIndex: "10" }} />
-            </MenuButton>
-            <MenuList paddingLeft={2}>
-              {!userNotfications.length && "No new mesages"}
-              {userNotfications.map((item) => (
-                <MenuItem
-                  key={item.chatId}
-                  onClick={() => {
-                    selectChatByID(item.chatId);
-                    deleteUserNotifications(user._id, item.chatId);
-                    setUserNotifications(
-                      userNotfications.filter((n) => n.chatId != item.chatId)
-                    );
-                  }}
-                >
-                  {`New message from ${item.sender}`}
-                </MenuItem>
-              ))}
-            </MenuList>
-          </Menu>
-          <Menu className="z-100">
-            <MenuButton as={Button} rightIcon={<ChevronDownIcon />}>
+          <Dropdown
+            placement="bottom"
+            className="pb-3"
+            menu={{ items }}
+            trigger={["click"]}
+          >
+            <a onClick={(e) => e.preventDefault()}>
               <Avatar
                 cursor={"pointer"}
                 size={"sm"}
                 name={user ? user.name : "Stanley"}
               />
-            </MenuButton>
-            <MenuList className="z-100">
-              <ProfileModal user={user}>
-                <MenuItem className="text-black">My Profile</MenuItem>
-              </ProfileModal>
-              <MenuDivider />
-              <MenuItem onClick={logoutHandler}>Logout</MenuItem>
-            </MenuList>
-          </Menu>
+              <DownOutlined className="text-gray-50 mt-2" />
+            </a>
+          </Dropdown>
         </div>
       </Box>
-      <Drawer placement="left" onClose={onClose} isOpen={isOpen}>
-        <DrawerOverlay />
-        <DrawerContent>
-          <DrawerHeader borderBottomWidth="1px"></DrawerHeader>
+      <Drawer
+        placement="left"
+        className="bg-gray-800"
+        onClose={onClose}
+        isOpen={isOpen}
+      >
+        <DrawerOverlay className="bg-gray-800" />
+        <DrawerContent backgroundColor={"#27272a"}>
+          <DrawerHeader
+            borderColor={"black"}
+            borderBottomWidth="1px"
+          ></DrawerHeader>
           <DrawerBody>
-            <Box className="flex pb-2">
-              <Input
-                marginRight={2}
+            <div className="flex pb-2">
+              <input
+                className="custom-input bg-slate-700 border border-black pl-2 w-full rounded-md mr-1 text-gray-100"
                 placeholder="Search by name or email"
                 value={search}
                 onKeyDown={handleKeyDown}
@@ -280,10 +339,10 @@ const SideDrawer = () => {
                   setSearch(e.target.value);
                 }}
               />
-              <Button onClick={handleSearch}>
+              <button className="group-chat-btn" onClick={handleSearch}>
                 <i class="fa-solid fa-magnifying-glass"></i>
-              </Button>
-            </Box>
+              </button>
+            </div>
             {loading ? (
               <ChatLoading />
             ) : (
