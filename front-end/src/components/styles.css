@@ -133,6 +133,18 @@ button[tabindex="0"] {
   transition: border-color 0.3s ease;
 }
 
+.custom-inputLogindiv > input {
+  outline: none;
+}
+
+.custom-inputLogindiv:hover {
+  border-color: #4096ff;
+}
+
+.custom-inputLogindiv {
+  transition: border-color 0.3s ease-in;
+}
+
 .wave {
   animation-name: wave-animation;
   animation-duration: 2s;

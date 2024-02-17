@@ -1,14 +1,16 @@
 import React, { useState } from "react";
 import { useToast } from "@chakra-ui/react";
-import { Input, Button } from "antd";
+import { Button } from "antd";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import "../../components/styles.css";
+import CustomInput from "../miscellaneous/CustomInput";
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const [passwordVisible, setPasswordVisible] = useState(false);
 
   const toast = useToast();
   const navigate = useNavigate();
@@ -72,21 +74,25 @@ const Login = () => {
       <div spacing={"5px"} color={"black"}>
         <form id="email">
           <label className="required text-sky-200">Email</label>
-          <Input
-            className="p-2 text-gray-200 border-black bg-slate-700 hover:bg-slate-700 mt-1 mb-1"
+
+          <CustomInput
+            moreStyles={"mt-1 mb-1"}
             value={email}
-            placeholder="Email"
+            visible={true}
+            placeholder={"Email"}
             onChange={(e) => setEmail(e.target.value)}
           />
         </form>
         <form id="password">
           <label className="required text-sky-200">Password</label>
 
-          <Input.Password
-            className="p-2 text-gray-200  border-black  bg-slate-700 hover:bg-slate-700 mt-1 mb-1"
-            placeholder="Password"
+          <CustomInput
+            moreStyles={"mt-1 mb-1"}
+            visible={passwordVisible}
+            setState={setPasswordVisible}
+            placeholder={"Password"}
+            password={true}
             value={password}
-            onKeyDown={handleKeyDown}
             onChange={(e) => setPassword(e.target.value)}
           />
         </form>

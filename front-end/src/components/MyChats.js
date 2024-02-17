@@ -148,7 +148,9 @@ const MyChats = ({ refetch }) => {
                     <div className="h-14 overflow-hidden ">
                       <Text
                         className={`text-lg ${
-                          isMessageUnread(chat._id, chat) ? "font-bold" : ""
+                          isMessageUnread(chat._id, chat)
+                            ? "font-bold text-cyan-200"
+                            : ""
                         }`}
                       >
                         {!chat.isGroupChat
@@ -158,7 +160,9 @@ const MyChats = ({ refetch }) => {
 
                       <span
                         className={`text-base ${
-                          isMessageUnread(chat._id, chat) ? "font-semibold" : ""
+                          isMessageUnread(chat._id, chat)
+                            ? "font-semibold text-cyan-200"
+                            : ""
                         }  overflow-hidden whitespace-nowrap`}
                       >
                         {chat.latestMessage

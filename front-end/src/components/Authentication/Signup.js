@@ -1,17 +1,20 @@
 import React, { useState } from "react";
-import { VStack, useToast } from "@chakra-ui/react";
+import { useToast } from "@chakra-ui/react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import { Input, Button } from "antd";
+import { Button } from "antd";
 import { UploadOutlined } from "@ant-design/icons";
 import "../../components/styles.css";
-
+import CustomInput from "../miscellaneous/CustomInput";
 
 const Signup = () => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState(false);
+  const [passwordVisible, setPasswordVisible] = useState(false);
+  const [confirmPasswordVisible, setConfirmPasswordVisible] = useState("");
+
   const [pic, setPic] = useState("");
   const [loading, setLoading] = useState(false);
   const toast = useToast();
@@ -127,26 +130,35 @@ const Signup = () => {
     <div spacing={"5px"} color={"black"}>
       <form id="first-name">
         <label className="required text-sky-200">Name</label>
-        <Input
-          placeholder="Name"
-          className="p-2 text-gray-200 border-black bg-slate-700 hover:bg-slate-700 mt-1 mb-1"
+
+        <CustomInput
+          moreStyles={"mt-1 mb-1"}
           onChange={(e) => setName(e.target.value)}
+          value={name}
+          placeholder={"Name"}
+          visible={true}
         />
       </form>
       <form id="email">
         <label className="required text-sky-200">Email</label>
 
-        <Input
-          placeholder="Email"
-          className="p-2 text-gray-200 border-black bg-slate-700 hover:bg-slate-700 mt-1 mb-1"
+        <CustomInput
+          moreStyles={"mt-1 mb-1"}
           onChange={(e) => setEmail(e.target.value)}
+          value={email}
+          placeholder={"Email"}
+          visible={true}
         />
       </form>
       <form id=" password">
         <label className="required text-sky-200">Password</label>
 
-        <Input.Password
-          className="p-2 text-gray-200 border-black bg-slate-700 hover:bg-slate-700 mt-1 mb-1"
+        <CustomInput
+          moreStyles={"mt-1 mb-1"}
+          visible={passwordVisible}
+          setState={setPasswordVisible}
+          password={true}
+          value={password}
           placeholder="Password"
           onChange={(e) => setPassword(e.target.value)}
         />
@@ -154,9 +166,13 @@ const Signup = () => {
       <form id="confirm-password">
         <label className="required text-sky-200">Confirm Password</label>
 
-        <Input.Password
+        <CustomInput
+          moreStyles={"mt-1"}
+          password={true}
+          visible={confirmPasswordVisible}
+          setState={setConfirmPasswordVisible}
           placeholder="Confirm Password"
-          className="p-2 text-gray-200 border-black bg-slate-700 hover:bg-slate-700 mt-1  "
+          value={confirmPassword}
           onChange={(e) => setConfirmPassword(e.target.value)}
         />
       </form>
@@ -164,7 +180,7 @@ const Signup = () => {
         <label for="uploadInput" className=" uploadBtn text-sky-200">
           Upload your picture <UploadOutlined></UploadOutlined>
         </label>
-        <label className="required"></label>
+        <label></label>
         <input
           type={"file"}
           id="uploadInput"
@@ -177,7 +193,7 @@ const Signup = () => {
         className=" w-full flex border-black border rounded-md mt-4 py-5 items-center justify-center"
         style={{ marginTop: 15 }}
         onClick={submitHandler}
-        isLoading={loading}
+        loading={loading}
       >
         Sign Up
       </Button>
