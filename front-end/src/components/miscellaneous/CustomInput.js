@@ -10,6 +10,7 @@ const CustomInput = ({
   moreStyles,
   onChange,
   value,
+  onKeyDown
 }) => {
   return (
     <div
@@ -21,6 +22,7 @@ const CustomInput = ({
         value={value}
         className="w-full bg-slate-700  pl-2 py-2 w-full rounded-md mr-1 text-white text-sm"
         onChange={onChange}
+        onKeyDown={onKeyDown}
       />
 
       {password ? (

@@ -63,8 +63,9 @@ const Login = () => {
     }
   };
 
-  const handleKeyDown = (event) => {
-    if (event.key === "Enter") {
+  const handleKeyDown = (e) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
       submitHandler();
     }
   };
@@ -94,6 +95,7 @@ const Login = () => {
             password={true}
             value={password}
             onChange={(e) => setPassword(e.target.value)}
+            onKeyDown={handleKeyDown}
           />
         </form>
 

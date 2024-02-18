@@ -9,7 +9,7 @@ import {
   ModalBody,
   ModalCloseButton, Image, Text
 } from "@chakra-ui/react";
-import {InfoCircleOutlined} from "@ant-design/icons"
+import {UserOutlined } from "@ant-design/icons"
 import "../../components/styles.css"
 
 const ProfileModal = ({ user, children }) => {
@@ -20,7 +20,7 @@ const ProfileModal = ({ user, children }) => {
       {children ? (
         <span onClick={onOpen}>{children}</span>
       ) : (
-        <InfoCircleOutlined className="hover:scale-105" onClick={onOpen} />
+        <UserOutlined className="hover:scale-105" onClick={onOpen} />
       )}
       <Modal size={"lg"} isOpen={isOpen} onClose={onClose} isCentered>
         <ModalOverlay />

@@ -44,6 +44,18 @@ input[type="file"] {
   border: 1px solid black;
 }
 
+.group-leave-btn {
+  background-color: #ef4444;
+  border-radius: 5px;
+  padding: 0.4rem;
+  border: 1px solid #ef4444;
+}
+
+.group-leave-btn:hover {
+  border-color: black;
+  
+}
+
 .group-chat-btn:hover {
   border-color: #4096ff;
 }
