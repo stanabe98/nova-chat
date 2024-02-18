@@ -126,6 +126,13 @@ const Signup = () => {
     }
   };
 
+  const handleKeyDown = (e) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      submitHandler();
+    }
+  };
+
   return (
     <div spacing={"5px"} color={"black"}>
       <form id="first-name">
@@ -174,6 +181,7 @@ const Signup = () => {
           placeholder="Confirm Password"
           value={confirmPassword}
           onChange={(e) => setConfirmPassword(e.target.value)}
+          onKeyDown={handleKeyDown}
         />
       </form>
       <form id="pic">

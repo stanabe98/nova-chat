@@ -13,12 +13,12 @@ import {
   Box,
   Spinner,
 } from "@chakra-ui/react";
-import {Input , Button } from "antd";
 import { ChatState } from "../../Context/ChatProvider";
 import axios from "axios";
 import UserListItem from "../UserAvatar/UserListItem";
 import UserProfileItem from "../UserAvatar/UserProfileItem";
 import "../../components/styles.css";
+import CustomInput from "./CustomInput";
 
 const GroupChatModal = ({ children }) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -80,6 +80,8 @@ const GroupChatModal = ({ children }) => {
       );
 
       setChats([data, ...chats]);
+      setSearchResults([])
+      setSelectedUsers([])
       onClose();
       toast({
         title: "New group chat created",
@@ -99,16 +101,24 @@ const GroupChatModal = ({ children }) => {
       });
     }
   };
-  const handleGroup = (addedUser) => {
-    if (selectedUsers.includes(addedUser)) {
-      return;
-    }
-    setSelectedUsers([...selectedUsers, addedUser]);
-  };
+  
   const handleDelete = (deleteUser) => {
     const uppdatedUser = selectedUsers.filter((s) => s._id !== deleteUser._id);
     setSelectedUsers(uppdatedUser);
   };
+
+  const addUserToGroup= (addedUser)=>{
+
+    const isUserInGroup = selectedUsers.some(
+      (user) => user.email === addedUser.email
+    );
+    if(isUserInGroup){
+      return
+    }else{
+      setSelectedUsers([...selectedUsers, addedUser]);
+    }
+
+  }
 
   return (
     <>
@@ -131,19 +141,27 @@ const GroupChatModal = ({ children }) => {
           "
           >
             <FormControl>
-              <Input
-                className="p-2 text-gray-200 border-black bg-slate-700 hover:bg-slate-700 mt-1 mb-1"
+              <CustomInput
+                moreStyles={"mt-1 mb-1"}
                 placeholder="Chat name"
-                marginBottom={3}
-                onChange={(e) => setGroupChatName(e.target.value)}
+                visible={true}
+                onChange={(e) => {
+                  setGroupChatName(e.target.value);
+                }}
               />
             </FormControl>
             <FormControl>
-              <Input
-                className="p-2 text-gray-200 border-black bg-slate-700 hover:bg-slate-700 mt-1 mb-1"
+              <CustomInput
+                moreStyles={"mt-1 mb-1"}
                 placeholder="Add Users"
-                marginBottom={1}
-                onChange={(e) => handleSearch(e.target.value)}
+                visible={true}
+                onChange={(e) => {
+                  if (e.target.value.trim() === "") {
+                    setSearchResults([]);
+                  } else {
+                    handleSearch(e.target.value);
+                  }
+                }}
               />
             </FormControl>
             <Box className="flex w-full flex-wrap">
@@ -165,18 +183,14 @@ const GroupChatModal = ({ children }) => {
                   <UserListItem
                     key={user._id}
                     user={user}
-                    handleFunction={() => handleGroup(user)}
+                    handleFunction={() => addUserToGroup(user)}
                   />
                 ))
             )}
           </ModalBody>
 
           <ModalFooter className="bg-gray-300 text-slate-100">
-            <button
-            
-              className="group-chat-btn"
-              onClick={handleSubmit}
-            >
+            <button className="group-chat-btn" onClick={handleSubmit}>
               Create Chat
             </button>
           </ModalFooter>

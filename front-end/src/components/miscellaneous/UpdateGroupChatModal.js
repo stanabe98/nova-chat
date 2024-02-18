@@ -8,19 +8,19 @@ import {
   ModalBody,
   ModalCloseButton,
   useDisclosure,
-  IconButton,
   Button,
   useToast,
   Box,
   FormControl,
-  Input,
   Spinner,
 } from "@chakra-ui/react";
-import { ViewIcon } from "@chakra-ui/icons";
 import { ChatState } from "../../Context/ChatProvider";
 import UserProfileItem from "../UserAvatar/UserProfileItem";
 import axios from "axios";
 import UserListItem from "../UserAvatar/UserListItem";
+import CustomInput from "./CustomInput";
+import "../../components/styles.css";
+import { UserOutlined } from "@ant-design/icons";
 
 const UpdateGroupChatModal = ({ refetch, setRefetch, fetchMessages }) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -121,7 +121,10 @@ const UpdateGroupChatModal = ({ refetch, setRefetch, fetchMessages }) => {
     try {
       setLoading(true);
 
-      const { data } = await axios.get(`/api/user?search=${search}`, getConfig(user));
+      const { data } = await axios.get(
+        `/api/user?search=${search}`,
+        getConfig(user)
+      );
 
       setLoading(false);
       setSearchResult(data);
@@ -172,11 +175,7 @@ const UpdateGroupChatModal = ({ refetch, setRefetch, fetchMessages }) => {
 
   return (
     <>
-      <IconButton
-        display={{ base: "flex" }}
-        onClick={onOpen}
-        icon={<ViewIcon />}
-      />
+      <UserOutlined className="hover:scale-105" onClick={onOpen} />
       <Modal
         isOpen={isOpen}
         onClose={() => {
@@ -192,11 +191,12 @@ const UpdateGroupChatModal = ({ refetch, setRefetch, fetchMessages }) => {
             fontFamily={"Work sans"}
             display={"flex"}
             justifyContent={"center"}
+            className="flex justify-center bg-slate-800 text-slate-100"
           >
             {selectedChat.chatName}
           </ModalHeader>
           <ModalCloseButton />
-          <ModalBody>
+          <ModalBody className="flex flex-col items-center bg-gray-300">
             <Box
               width="100%"
               display={"flex"}
@@ -212,15 +212,19 @@ const UpdateGroupChatModal = ({ refetch, setRefetch, fetchMessages }) => {
               ))}
             </Box>
             <FormControl display={"flex"}>
-              <Input
+              <CustomInput
+                moreStyles={"mb-3 w-full"}
                 placeholder="Chat Name"
-                marginBottom={3}
                 value={groupChatName}
+                visible={true}
                 onChange={(e) => setGroupChatName(e.target.value)}
               />
               <Button
                 variant={"solid"}
-                colorScheme="teal"
+                backgroundColor={"#0e7490"}
+                color={"#e5e7eb"}
+                className="border border-transparent"
+                _hover={{ bg: "#0e7490", borderColor: " #4096ff" }}
                 marginLeft={1}
                 isLoading={renameLoading}
                 onClick={handleRename}
@@ -229,29 +233,41 @@ const UpdateGroupChatModal = ({ refetch, setRefetch, fetchMessages }) => {
               </Button>
             </FormControl>
             <FormControl>
-              <Input
+              <CustomInput
                 placeholder="Add user to group"
-                marginBottom={1}
-                onChange={(e) => handleSearch(e.target.value)}
+                onChange={(e) => {
+                  if (e.target.value.trim() === "") {
+                    setSearchResult([]);
+                    return;
+                  }
+                  handleSearch(e.target.value);
+                }}
+                visible={true}
+                moreStyles={"mb-1"}
               />
             </FormControl>
             {loading ? (
               <Spinner size="lg" />
             ) : (
-              searchResult?.map((u) => (
-                <UserListItem
-                  key={u._id}
-                  user={u}
-                  handleFunction={() => handleAddUser(u)}
-                />
-              ))
+              searchResult
+                ?.slice(0, 4)
+                .map((u) => (
+                  <UserListItem
+                    key={u._id}
+                    user={u}
+                    handleFunction={() => handleAddUser(u)}
+                  />
+                ))
             )}
           </ModalBody>
 
-          <ModalFooter>
-            <Button colorScheme="red" onClick={() => handleRemoveUser(user)}>
+          <ModalFooter className="bg-gray-300 text-slate-100">
+            <button
+              className="group-leave-btn"
+              onClick={() => handleRemoveUser(user)}
+            >
               Leave Group
-            </Button>
+            </button>
           </ModalFooter>
         </ModalContent>
       </Modal>
