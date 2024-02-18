@@ -12,3 +12,6 @@ Search users to begin a chat with:
 ![image](https://github.com/stanabe98/nova-chat/assets/79373071/ca3beb1d-7f3e-42af-b21e-fbc010b72ca8)
 
 ![image](https://github.com/stanabe98/nova-chat/assets/79373071/5f9c5e1e-1a41-44a7-853d-22e85b0aca97)
+
+Realtime notiications and messages:
+![bandicam 2024-02-18 18-10-08-487](https://github.com/stanabe98/nova-chat/assets/79373071/583359c2-3974-4478-85e3-7c50308125a7)
