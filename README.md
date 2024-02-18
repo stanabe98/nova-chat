@@ -2,4 +2,13 @@ App deployed on:
 https://nova-chat.onrender.com/
 
 Screenshots:
-![image](https://github.com/stanabe98/nova-chat/assets/79373071/144ce50a-21d4-4538-94fc-701c6de4b4fe)
+Can login with guest user credentials or create account:
+![image](https://github.com/stanabe98/nova-chat/assets/79373071/ed35f998-8c92-4dec-9ef4-729cb59ca867)
+
+![image](https://github.com/stanabe98/nova-chat/assets/79373071/bc3aeb45-4c2e-47ff-a8bc-310d93fc38b3)
+
+Search users to begin a chat with:
+![image](https://github.com/stanabe98/nova-chat/assets/79373071/c08510c0-b25c-473a-8d3a-1e88345ab531)
+![image](https://github.com/stanabe98/nova-chat/assets/79373071/ca3beb1d-7f3e-42af-b21e-fbc010b72ca8)
+
+![image](https://github.com/stanabe98/nova-chat/assets/79373071/5f9c5e1e-1a41-44a7-853d-22e85b0aca97)
