@@ -8,7 +8,7 @@ const sendMessage = expressAsyncHandler(async (req, res) => {
   const { content, chatId } = req.body;
 
   if (!content || !chatId) {
-    console.log("Invalid data passed");
+   
     return res.sendStatus(400);
   }
   const chatUsers = await Chat.findById(chatId);
@@ -66,14 +66,12 @@ const sendMessage = expressAsyncHandler(async (req, res) => {
     }
 
     currentChat.users.forEach((u) => {
-      console.log(u._id);
-
+     
       const receiverSocketId = getReceiverSocketId(u._id);
       if (receiverSocketId) {
         io.to(receiverSocketId).emit("newMessage", message);
       }
     });
-
 
     // chatUsers.users.forEach((userId) => {
     //   console.log("userid", userId);
@@ -85,7 +83,7 @@ const sendMessage = expressAsyncHandler(async (req, res) => {
 
     res.json(message);
   } catch (error) {
-    console.log("here is the error");
+
     res.status(400);
     throw new Error(error.message);
   }

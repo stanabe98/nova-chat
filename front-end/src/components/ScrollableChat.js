@@ -13,7 +13,13 @@ import "../components/styles.css";
 const ScrollableChat = ({ messages }) => {
   const { user } = ChatState();
   return (
-    <ScrollableFeed className="scrollable-div">
+    <ScrollableFeed
+      className="scrollable-div 
+    
+    pb-5
+    
+    "
+    >
       {messages &&
         messages.map((m, i) => (
           <div key={m._id} className="flex">

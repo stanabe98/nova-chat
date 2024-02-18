@@ -15,8 +15,6 @@ import UpdateGroupChatModal from "./miscellaneous/UpdateGroupChatModal";
 import axios from "axios";
 import "./styles.css";
 import ScrollableChat from "./ScrollableChat";
-import Lottie from "react-lottie";
-import animationData from "../animations/typingAnime.json";
 import { useSocketContext } from "../Context/SocketContext";
 import { deleteUserNotifications } from "./helpers/methods";
 import { NavigationOutlined } from "@mui/icons-material";
@@ -26,17 +24,6 @@ const SingleChat = ({ refetch, setRefetch }) => {
   const [loading, setLoading] = useState(false);
   const [newMessage, setNewMessage] = useState();
   const [typing, setTyping] = useState(false);
-  const [isUserTyping, setisUserTyping] = useState(false);
-  const [userTyping, setUserTyping] = useState();
-  const [isTyping, setIsTyping] = useState(false);
-  const defaultOptions = {
-    loop: true,
-    autoplay: true,
-    animationData: animationData,
-    rendererSettings: {
-      preserveAspectRatio: "xMidYMid slice",
-    },
-  };
 
   const {
     user,
@@ -81,15 +68,15 @@ const SingleChat = ({ refetch, setRefetch }) => {
 
   useEffect(() => {
     socket?.on("newMessage", (newMessage) => {
-      console.log("new message-----------", newMessage.chat._id);
+    
       setRefetchChats(!refetchChats);
 
       if (selectedChat !== "" && selectedChat?._id === newMessage.chat._id) {
         deleteUserNotifications(user._id, newMessage.chat._id);
         setMessages([...messages, newMessage]);
-        console.log("executing if");
+   
       } else {
-        console.log("executing else");
+    
         setRefetchUserInfo(!refetchUserInfo);
       }
     });
@@ -214,23 +201,12 @@ const SingleChat = ({ refetch, setRefetch }) => {
                 className="w-20 h-20 self-center m-auto"
               />
             ) : (
-              <div className="messages">
+              <div className="mb-8 messages">
                 <ScrollableChat messages={messages} />
               </div>
             )}
             <FormControl onKeyDown={sendMessage} isRequired marginTop={3}>
-              {isUserTyping ? (
-                <div className="h-8">
-                  <Lottie
-                    options={defaultOptions}
-                    className="ml-0"
-                    width={60}
-                    style={{ marginLeft: 0 }}
-                  />
-                </div>
-              ) : (
-                <div className="h-8"></div>
-              )}
+        
               <div className="flex items-center bg-slate-700 rounded-md custom-inputdiv border border-black">
                 <input
                   className="w-full 

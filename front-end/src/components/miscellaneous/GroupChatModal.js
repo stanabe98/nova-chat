@@ -101,7 +101,6 @@ const GroupChatModal = ({ children }) => {
   };
   const handleGroup = (addedUser) => {
     if (selectedUsers.includes(addedUser)) {
-      //comeback to this
       return;
     }
     setSelectedUsers([...selectedUsers, addedUser]);

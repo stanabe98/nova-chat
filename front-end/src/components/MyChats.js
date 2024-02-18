@@ -51,7 +51,7 @@ const MyChats = ({ refetch }) => {
   };
 
   const isMessageUnread = (chatId, chat) => {
-    console.log("-------", chat.latestMessage?.sender?.name);
+    
     return userNotfications.some((n) => n.chatId === chatId);
   };
 

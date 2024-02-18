@@ -87,7 +87,6 @@ const getUser = asyncHandler(async (req, res) => {
   const currentUser = await User.findById(userId.toString()).select(
     "-password"
   );
-  console.log(currentUser);
   res.send(currentUser);
 });
 
@@ -120,7 +119,7 @@ const postUserNotifications2 = asyncHandler(async (req, res) => {
       chatUsers.map(async (user) => {
         if (user._id.toString() !== senderId) {
           if (!user.notifications.includes(chatId)) {
-            console.log(user.notifications);
+         
 
             await User.findByIdAndUpdate(user._id.toString(), {
               $push: { notifications: chatId },
@@ -150,7 +149,7 @@ const postUserNotifications = asyncHandler(async (req, res) => {
     const chatUsers = findChat.users;
     const userIds = chatUsers.map((user) => user._id.toString());
 
-    console.log("executing");
+    
     const expected = await User.where("_id")
       .in(userIds)
       .updateMany({ $addToSet: { notifications: chatId } });

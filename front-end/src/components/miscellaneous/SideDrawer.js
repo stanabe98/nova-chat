@@ -67,7 +67,6 @@ const SideDrawer = () => {
         }, []);
 
         setUserNotifications(uniqueChatIds);
-        console.log("data is " + JSON.stringify(uniqueChatIds));
       } catch (error) {
         console.error("Error fetching data:", error);
       }
@@ -80,11 +79,9 @@ const SideDrawer = () => {
       (n) => n.chatId === selectedChat._id
     );
     if (containsChatId) {
-      console.log("yessss");
       deleteUserNotifications(user._id, selectedChat._id);
       setRefetchUserInfo(!refetchUserInfo);
     } else {
-      console.log("noooo");
     }
   }, [selectedChat, setSelectedChat]);
 
@@ -95,7 +92,6 @@ const SideDrawer = () => {
 
   const selectChatByID = (chatId) => {
     const foundChat = chats.filter((s) => s._id === chatId);
-    console.log("selectedChat", foundChat);
     setSelectedChat(foundChat[0]);
   };
 
@@ -249,10 +245,7 @@ const SideDrawer = () => {
           hasArrow
           placeContent={"bottom-end"}
         >
-          <SearchOutlined
-            className="text-2xl text-gray-50"
-            onClick={onOpen}
-          />
+          <SearchOutlined className="text-2xl text-gray-50" onClick={onOpen} />
         </Tooltip>
         <Text
           className="text-2xl flex items-center text-gray-50 font-semibold text-3xl ml-28"
@@ -260,9 +253,7 @@ const SideDrawer = () => {
         >
           Nova-Chat
           <div>
-            <img
-            className="chat-logo"
-            width="40rem" src={logo} alt="Logo" />
+            <img className="chat-logo" width="40rem" src={logo} alt="Logo" />
           </div>
         </Text>
         <div className=" items-center  ">
