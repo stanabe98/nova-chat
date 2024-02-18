@@ -8,7 +8,7 @@ export const useSocketContext = () => {
   return useContext(SocketContext);
 };
 
-const ENDPOINT = "http://localhost:5000";
+const ENDPOINT = "https://nova-chat.onrender.com";
 
 export const SocketContextProvider = ({ children }) => {
   const [socket, setSocket] = useState(null);
